@@ -100,3 +100,41 @@ commit 水位。那兩個面向不是「查過沒發現」，是根本沒查，�
 綠燈不是「沒有待辦」，是沒有人看。
 
 **觸發條件**：報告列出項目時逐筆讀 diff、把採用／略過理由寫進本檔，然後才推進 baseline 的水位。
+
+
+## 2026-08-30：上游 #571 採用（下架未付款夥伴），#570 不引用
+
+commit 水位 `b1aaa36` → `e55de88`；PR 水位 569 → 571；issue 水位維持 569（實查為空）。
+
+### 採用：Converly 下架（上游 PR #571 / commit `e55de88`）
+
+**上游做了什麼**：把 Verified Partner「Converly」設為 `active: false` 並刪掉
+`tools/integrations/converly.md`，理由寫在標題裡——**付款未清**。
+
+**為什麼本 fork 也要跟**：本 fork 的 `tools/REGISTRY.md` 原本把 Converly 列在
+**Verified Partners** 表，附註「Converly sponsors Marketing Skills」，`Tool Index` 也有一列
+指向 `integrations/converly.md`。**本 fork 與 Converly 沒有任何商業關係**，卻在替一個連上游
+都因未付款而下架的廠商掛保證。這不是產品偏好問題，是掛了一個沒有依據的背書。
+
+**落地方式**：改 `partners.json` 的 `active: false`、刪 `tools/integrations/converly.md`，
+再跑本 repo 自己的 `node scripts/sync-partners.mjs` 重新產生區塊（0 partners）。
+`Tool Index` 那一列是 sync 腳本不管的手寫表，另外手動移除——不移的話它會指向剛被刪掉的檔案，
+`tools/check_links.py` 會紅。
+
+**與上游的差異**：上游的 README 有 `<!-- PARTNERS:START -->` 區塊要一起改，**本 fork 沒有**
+（fork 的 README 早就不轉載上游的贊助商推廣），所以 sync 腳本對 README 報
+「missing markers」是預期結果，不是故障。上游同時加的 `.gitignore` `.partners-pending/`
+是它的收款流程暫存目錄，本 fork 沒有那個流程，不引用。
+
+**已知的上游不一致**：`partners.json` 保留 converly 條目（`_comment` 說停用要保留歷史），
+但 `integration` 欄仍指向已刪除的 `tools/integrations/converly.md`。上游自己也是這個狀態。
+條目 `active: false` 時不會被渲染，所以是惰性的，本 fork 維持與上游一致不另行分歧。
+**觸發條件**：上游修正該欄位時跟著改。
+
+### 不引用：PR #570「Claude/crypto trading prediction app」
+
+OPEN，內容是往這個 repo 塞一整個加密貨幣交易預測 app（`crypto-trading-app/` 的
+`index.html`、`src/App.tsx`、`src/api/binance.ts`、`package-lock.json` 等）。與這個 repo 的
+主題（行銷技能庫）無關，上游也沒有合併。
+
+**觸發條件**：上游合併它時再看——那時它就會經由 commit 軸抵達。
