@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { writeJson } = require('./_safe-output')
+
 const API_SECRET = process.env.KIT_API_SECRET
 const API_KEY = process.env.KIT_API_KEY
 const BASE_URL = 'https://api.convertkit.com/v3'
@@ -223,7 +225,7 @@ async function main() {
       }
   }
 
-  console.log(JSON.stringify(result, null, 2))
+  writeJson(result, [API_SECRET, API_KEY])
 }
 
 main().catch(err => {

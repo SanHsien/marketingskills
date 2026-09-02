@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { writeJson } = require('./_safe-output')
+
 const API_KEY = process.env.INSTANTLY_API_KEY
 const BASE_URL = 'https://api.instantly.ai/api/v1'
 
@@ -261,7 +263,7 @@ async function main() {
       }
   }
 
-  console.log(JSON.stringify(result, null, 2))
+  writeJson(result, [API_KEY])
 }
 
 main().catch(err => {
