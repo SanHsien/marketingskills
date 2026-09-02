@@ -165,10 +165,14 @@ function updateMarketplace(skills) {
  * update path silently breaks.
  */
 function updatePluginVersion() {
-  if (!fs.existsSync(PLUGIN_FILE)) return { updated: false };
-
   const marketplace = JSON.parse(fs.readFileSync(MARKETPLACE_FILE, "utf8"));
-  const plugin = JSON.parse(fs.readFileSync(PLUGIN_FILE, "utf8"));
+  let plugin;
+  try {
+    plugin = JSON.parse(fs.readFileSync(PLUGIN_FILE, "utf8"));
+  } catch (error) {
+    if (error && error.code === "ENOENT") return { updated: false };
+    throw error;
+  }
   const marketplaceVersion = marketplace.metadata && marketplace.metadata.version;
 
   if (!marketplaceVersion) return { updated: false };

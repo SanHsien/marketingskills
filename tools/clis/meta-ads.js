@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { writeJson } = require('./_safe-output')
+
 const TOKEN = process.env.META_ACCESS_TOKEN
 const DEFAULT_ACCOUNT_ID = process.env.META_AD_ACCOUNT_ID
 const BASE_URL = 'https://graph.facebook.com/v18.0'
@@ -172,7 +174,7 @@ async function main() {
       }
   }
 
-  console.log(JSON.stringify(result, null, 2))
+  writeJson(result, [TOKEN])
 }
 
 main().catch(err => {

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const { writeJson } = require('./_safe-output')
+
 const API_KEY = process.env.AMPLITUDE_API_KEY
 const SECRET_KEY = process.env.AMPLITUDE_SECRET_KEY
 const INGESTION_URL = 'https://api2.amplitude.com'
@@ -173,7 +175,7 @@ async function main() {
       }
   }
 
-  console.log(JSON.stringify(result, null, 2))
+  writeJson(result, [API_KEY, SECRET_KEY])
 }
 
 main().catch(err => {
