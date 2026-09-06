@@ -68,6 +68,16 @@ def test_fresh_clone_docs_install_the_pinned_security_scanner() -> None:
         assert "requirements-security.txt" in text, relative_path
 
 
+def test_security_scanner_pin_supports_configurable_resource_budgets() -> None:
+    requirement = (
+        "skillspector @ git+https://github.com/SanHsien/SkillSpector.git@"
+        "185d610bc1710968f7cce350a0c44098aa88089f"
+    )
+    assert requirement in (ROOT / "requirements-security.txt").read_text(
+        encoding="utf-8"
+    )
+
+
 def test_canonical_gate_has_realistic_full_scan_budgets() -> None:
     dev_check = (ROOT / "tools" / "dev_check.ps1").read_text(encoding="utf-8")
     assert "[int]$SkillSpectorMaxStaticSeconds = 300" in dev_check

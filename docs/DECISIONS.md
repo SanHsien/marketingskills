@@ -163,3 +163,9 @@ reference resolver 當成 local path；僅允許 nonfatal `reference_unresolved`
 **資源預算**：每個靜態分析預設 300 秒、每個 skill workflow 900 秒。`marketing-plan`
 在 120 秒靜態預算下會把 supply-chain bytecode accounting 記為 runtime_limit；提高後的
 focused scan 為 0 finding、0 limitation。timeout 仍回 exit 2，不視為通過。
+
+**2026-09-07 pin 修正**：SkillSpector pin 從 `70cd263` 前進到 `185d610`，使 fresh runner
+與本機驗證使用同一套可設定 static/workflow resource budget 的實作。先前本機 interpreter
+實際由 editable source 載入新版，但 requirements 仍安裝舊 revision；版本字串同為 2.11.0，
+不能當成相同 provenance。新 SHA 已確認在 `SanHsien/SkillSpector` 遠端 main，且其 CI、
+CodeQL、Scorecard 全綠。
