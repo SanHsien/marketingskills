@@ -1,4 +1,13 @@
-from tools.run_skillspector import _build_state, _exit_code
+from pathlib import Path
+
+import yaml
+
+from tools.run_skillspector import (
+    _build_state,
+    _exit_code,
+    _invoke_graph,
+    _merge_scoped_rules,
+)
 
 
 EXPECTED_ANALYZERS = {
@@ -27,6 +36,85 @@ EXPECTED_ANALYZERS = {
     "static_patterns_tool_misuse",
     "static_yara",
 }
+
+
+class _FakeGraph:
+    def __init__(self) -> None:
+        self.calls = []
+
+    def invoke(self, state, config=None):
+        self.calls.append((state, config))
+        return {"ok": True}
+
+
+def test_graph_is_invoked_sequentially():
+    graph = _FakeGraph()
+    result = _invoke_graph(graph, {"input_path": "skill"})
+    assert result == {"ok": True}
+    assert graph.calls == [
+        ({"input_path": "skill"}, {"max_concurrency": 1})
+    ]
+
+
+def test_scoped_rules_only_apply_to_the_current_skill():
+    baseline = {
+        "rules": [{"id": "GLOBAL", "reason": "global"}],
+        "scoped_rules": [
+            {
+                "skill": "ads",
+                "id": "MP3",
+                "path": "references/meta-decision-system.md",
+                "message": "*Swap rules*",
+                "reason": "ads terminology",
+            },
+            {
+                "skill": "events",
+                "id": "E4",
+                "path": "SKILL.md",
+                "message": "*Capture context*",
+                "reason": "event follow-up terminology",
+            },
+        ],
+        "fingerprints": [],
+    }
+
+    merged = _merge_scoped_rules(baseline, "ads")
+
+    assert "scoped_rules" not in merged
+    assert merged["rules"] == [
+        {"id": "GLOBAL", "reason": "global"},
+        {
+            "id": "MP3",
+            "path": "references/meta-decision-system.md",
+            "message": "*Swap rules*",
+            "reason": "ads terminology",
+        },
+    ]
+
+
+def test_reviewed_unstable_findings_have_exact_skill_scopes():
+    baseline = yaml.safe_load(
+        (Path(__file__).parents[1] / ".skillspector-baseline.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    expected = {
+        ("ad-creative", "RP1", "references/generative-tools.md", None),
+        ("ads", "MP3", "references/meta-decision-system.md", "*Swap rules*"),
+        ("ai-seo", "RP1", "SKILL.md", None),
+        ("ai-seo", "RP1", "evals/evals.json", None),
+        ("directory-submissions", "RA2", "references/directory-list.md", "*plist*"),
+        ("events", "E4", "SKILL.md", "*Capture context*"),
+        ("marketing-loops", "EA4", "evals/evals.json", "*loop forever*"),
+        ("revops", "RA2", "references/automation-playbooks.md", "*Create task for*"),
+    }
+    actual = {
+        (rule["skill"], rule["id"], rule["path"], rule.get("message"))
+        for rule in baseline.get("scoped_rules", [])
+    }
+
+    assert actual == expected
+    assert all(rule.get("reason", "").strip() for rule in baseline["scoped_rules"])
 
 
 def _completed_analyzer(analyzer_id):
@@ -74,8 +162,16 @@ def _complete_report(*, issues=None):
 def test_build_state_injects_workflow_budget():
     calls = {}
 
-    def scan_state(input_path, output_format, no_llm, baseline=None):
-        calls["scan_state"] = (input_path, output_format, no_llm, baseline)
+    def scan_state(
+        input_path, output_format, no_llm, baseline=None, show_suppressed=False
+    ):
+        calls["scan_state"] = (
+            input_path,
+            output_format,
+            no_llm,
+            baseline,
+            show_suppressed,
+        )
         return {"input_path": input_path}
 
     def budget_factory(*, max_seconds):
@@ -92,7 +188,7 @@ def test_build_state_injects_workflow_budget():
     )
 
     assert calls == {
-        "scan_state": ("skill", "json", True, "baseline.yaml"),
+        "scan_state": ("skill", "json", True, "baseline.yaml", True),
         "budget": 300,
     }
     assert state["workflow_resource_budget"] == {"max_seconds": 300}

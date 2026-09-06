@@ -5,7 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
+
+import yaml
 
 
 _WORK_COUNTERS = ("planned_work", "completed", "partial", "skipped", "failed", "unaccounted")
@@ -208,11 +212,64 @@ def _build_state(
         output_format,
         True,
         baseline=baseline,
+        show_suppressed=True,
     )
     state["workflow_resource_budget"] = budget_factory(
         max_seconds=max_workflow_seconds
     )
     return state
+
+
+def _invoke_graph(graph, state):
+    """Serialize analyzer branches to prevent nondeterministic finding loss/gain."""
+    return graph.invoke(state, config={"max_concurrency": 1})
+
+
+def _merge_scoped_rules(baseline: dict[str, object], skill_name: str) -> dict[str, object]:
+    """Convert this repository's skill-scoped rules into scanner-native rules."""
+    merged = dict(baseline)
+    global_rules = baseline.get("rules") or []
+    scoped_rules = baseline.get("scoped_rules") or []
+    if not isinstance(global_rules, list) or not isinstance(scoped_rules, list):
+        raise ValueError("baseline rules and scoped_rules must be lists")
+
+    selected: list[dict[str, object]] = []
+    for raw_rule in scoped_rules:
+        if not isinstance(raw_rule, dict):
+            raise ValueError("each scoped baseline rule must be a mapping")
+        scope = raw_rule.get("skill")
+        if not isinstance(scope, str) or not scope.strip():
+            raise ValueError("each scoped baseline rule must name one skill")
+        if scope == skill_name:
+            selected.append(
+                {key: value for key, value in raw_rule.items() if key != "skill"}
+            )
+
+    merged["rules"] = [*global_rules, *selected]
+    merged.pop("scoped_rules", None)
+    return merged
+
+
+@contextmanager
+def _effective_baseline_path(baseline_path: Path, input_path: str):
+    """Yield a temporary baseline containing rules for only the scanned skill."""
+    baseline = yaml.safe_load(baseline_path.read_text(encoding="utf-8"))
+    if not isinstance(baseline, dict):
+        raise ValueError("baseline must be a mapping")
+    merged = _merge_scoped_rules(baseline, Path(input_path).resolve().name)
+    if "scoped_rules" not in baseline:
+        yield baseline_path
+        return
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", newline="\n", suffix=".yaml", delete=False
+    ) as handle:
+        yaml.safe_dump(merged, handle, allow_unicode=True, sort_keys=False)
+        temporary_path = Path(handle.name)
+    try:
+        yield temporary_path
+    finally:
+        temporary_path.unlink(missing_ok=True)
 
 
 def _exit_code(report: dict[str, object]) -> int:
@@ -238,15 +295,16 @@ def main() -> int:
         from skillspector.cli import FormatChoice, _result_body, _scan_state, graph
         from skillspector.state import WorkflowResourceBudget
 
-        state = _build_state(
-            _scan_state,
-            WorkflowResourceBudget,
-            input_path=args.input_path,
-            output_format=FormatChoice.json,
-            baseline=args.baseline,
-            max_workflow_seconds=args.max_workflow_seconds,
-        )
-        result = graph.invoke(state)
+        with _effective_baseline_path(args.baseline, args.input_path) as baseline:
+            state = _build_state(
+                _scan_state,
+                WorkflowResourceBudget,
+                input_path=args.input_path,
+                output_format=FormatChoice.json,
+                baseline=baseline,
+                max_workflow_seconds=args.max_workflow_seconds,
+            )
+            result = _invoke_graph(graph, state)
         report_body = _result_body(result)
         if not report_body:
             raise RuntimeError("SkillSpector returned an empty report")

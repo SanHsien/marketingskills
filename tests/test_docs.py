@@ -84,6 +84,13 @@ def test_canonical_gate_has_realistic_full_scan_budgets() -> None:
     assert "[int]$SkillSpectorMaxWorkflowSeconds = 900" in dev_check
 
 
+def test_canonical_gate_uses_a_deterministic_python_hash_seed() -> None:
+    dev_check = (ROOT / "tools" / "dev_check.ps1").read_text(encoding="utf-8")
+    assert '$previousPythonHashSeed = $env:PYTHONHASHSEED' in dev_check
+    assert '$env:PYTHONHASHSEED = "0"' in dev_check
+    assert '$env:PYTHONHASHSEED = $previousPythonHashSeed' in dev_check
+
+
 def test_upstream_workflows_have_repo_guard() -> None:
     fork_owned = {
         "ci.yml",

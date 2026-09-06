@@ -151,6 +151,14 @@ function Invoke-SkillSpectorSelfScan {
     Write-Host "SkillSpector self-scan: no new findings across $($skillDirs.Count) skill(s)."
 }
 
-Invoke-SkillSpectorSelfScan -RepoRoot $repoRoot -SkillsRoot (Join-Path $repoRoot "skills")
+$previousPythonHashSeed = $env:PYTHONHASHSEED
+# Each skill scan starts a fresh Python process. Pin hash randomization as a
+# second stability guard; run_skillspector.py also serializes analyzer branches.
+$env:PYTHONHASHSEED = "0"
+try {
+    Invoke-SkillSpectorSelfScan -RepoRoot $repoRoot -SkillsRoot (Join-Path $repoRoot "skills")
+} finally {
+    $env:PYTHONHASHSEED = $previousPythonHashSeed
+}
 
 Write-Host "WINDOWS DEV CHECK GREEN"

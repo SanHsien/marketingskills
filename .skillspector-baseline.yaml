@@ -5,545 +5,234 @@
 # Regenerate a skill's entries with: skillspector baseline skills/<name> --no-llm --reason '...'
 version: 2
 scanner_version: 2.11.0
-#
 rules: []
+scoped_rules:
+- skill: ad-creative
+  id: RP1
+  path: references/generative-tools.md
+  reason: 自我指涉誤判：第三方生成工具的 npx 安裝範例是提供給使用者參考的文件文字，不是此 skill 綁定執行的 MCP 或 CLI 設定。
+- skill: ads
+  id: MP3
+  path: references/meta-decision-system.md
+  message: '*Swap rules*'
+  reason: 自我指涉誤判：Swap rules 描述廣告素材輪替與投放學習狀態，不是修改 agent 記憶、人格或安全規則。
+- skill: ai-seo
+  id: RP1
+  path: SKILL.md
+  reason: 自我指涉誤判：npx 安裝範例是 SEO 工具的使用者操作文件，不是此 skill 自動執行的未鎖版 MCP 或 CLI 設定。
+- skill: ai-seo
+  id: RP1
+  path: evals/evals.json
+  reason: 自我指涉誤判：評測資料中的 npx 安裝文字是預期回答內容，不是此 skill 自動執行的未鎖版 MCP 或 CLI 設定。
+- skill: directory-submissions
+  id: RA2
+  path: references/directory-list.md
+  message: '*plist*'
+  reason: 字串 plist 只是公開目錄品牌 OnToplist 的子字串；文件不建立 launchd plist、cron 或跨 session 持久化。
+- skill: events
+  id: E4
+  path: SKILL.md
+  message: '*Capture context*'
+  reason: Capture context 是請業務人員記錄活動對話重點以便跟進的行銷建議，不是外傳 agent 對話上下文。
+- skill: marketing-loops
+  id: EA4
+  path: evals/evals.json
+  message: '*loop forever*'
+  reason: 評測明確要求流程具有停止條件且不得無限循環，不是允許無界資源或 API 消耗。
+- skill: revops
+  id: RA2
+  path: references/automation-playbooks.md
+  message: '*Create task for*'
+  reason: Create task for CS 是 CRM 內建的客戶成功待辦流程，不是建立 cron、開機腳本或跨 session 持久化。
 fingerprints:
-- hash: sha256:1324c0d1b1acd9a2f2f23305e11007ab3743dbb16b1e5a245bb9b6bf1bfb87de
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：ad-creative 範例 JSON 是真實廣告文案素材（蛋白粉產品的重金屬檢測行銷文案，含 arsenic/cadmium/lead 等檢測數據與『in limits』結論），因含毒性重金屬字樣被誤判為可能造成人身傷害的有害內容，實際是說明產品『通過檢測、含量在安全範圍內』的行銷素材，非有害指令。
-- hash: sha256:4715eeebed7d1d38d3bd18d6bb98d9728e3ee80a691876b03cd35573bf8f356a
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：ad-creative 範例 JSON 是真實廣告文案素材（蛋白粉產品的重金屬檢測行銷文案，含 arsenic/cadmium/lead 等檢測數據與『in limits』結論），因含毒性重金屬字樣被誤判為可能造成人身傷害的有害內容，實際是說明產品『通過檢測、含量在安全範圍內』的行銷素材，非有害指令。
-- hash: sha256:a60fc9472bd8737820eb35f492db19c6da9add0ddda5a528659666f98c7f7e84
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：SKILL.md／references 內以相對路徑引用同一 skill 內的 references/assets 檔案（如 `references/scoring-criteria.md`、`assets/creative-review-template.html`），SkillSpector
-    的靜態掃描（--no-llm）沒有實際開啟這些檔案內容比對，因而回報『引用的檔案未完整檢查』；這是掃描模式限制，不是本 skill 隱藏未揭露內容。
-- hash: sha256:92eb5139d7fde6ef7a93890483e95fcc295f1bc77cffa9c1343bb1af2e6d5b91
-  rule_id: AR2
-  file: SKILL.md
-  reason: 自我指涉誤判：常見錯誤檢查清單（如『忽略字數限制』『未加警告』）與操作指南中的『警告』字樣是教學內容本身在提醒要注意什麼，非要求 agent 省略警示或免責聲明。
-- hash: sha256:44ab0a1027b1ecf0be901dbd64c556a527c490ee5b668fb96e24333bfade871f
-  rule_id: P2
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：creative-review-template.html 開頭的 HTML 註解是給人類/agent 看的『如何使用本頁面』說明文字，非隱藏惡意指令。
-- hash: sha256:fb0d0a2577facf30d8b2825b80c043fcc0422f2eda05965c2b928c51814d6539
-  rule_id: E1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本
-    skill 外洩資料；目錄提交 CSV 中的網址是公開提交表單清單。
-- hash: sha256:fb8f6611d3b0b12fbec0ef7d80885cc003d008eda7ef579f86cc070979f3f06e
-  rule_id: E1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本
-    skill 外洩資料；目錄提交 CSV 中的網址是公開提交表單清單。
-- hash: sha256:8c1edf47e5f063a660a4f1ab163dafc1b16c97ae953e9ed28c5f466e3ded409f
-  rule_id: E1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本
-    skill 外洩資料；目錄提交 CSV 中的網址是公開提交表單清單。
-- hash: sha256:bde0690929589f61f6a25d065ed694aed8678576620993d2b35d035cec900053
-  rule_id: RP1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
-- hash: sha256:cb18184d2e0aeeb81ee939527830325fbf30fd27231094eb8b2866f22b832510
-  rule_id: RP1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
-- hash: sha256:58aaaef36ab379b174840b4082f4fabbc9ceddfec5295a6759da5d004ee3303a
-  rule_id: RP1
-  file: references/imessage-video-ads.md
-  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
-- hash: sha256:c222caa31ff8eb72cef50e968513f0a3b8c0a0dbd97f4876c35e5ffc0b405316
-  rule_id: P1
-  file: references/audit-guardrails.md
-  reason: 自我指涉誤判：文件教導 agent 把擷取到的網頁／競品廣告內容視為資料而非指令，範例字面提及『ignore previous instructions』是防禦說明，非真實指令覆寫。
-- hash: sha256:e9889a27033687d2e6fa55845be40498ccb94a1dbf9eab28a1c13d9ae1042600
-  rule_id: MP3
-  file: references/b2b-paid-playbook.md
-  reason: 自我指涉誤判：廣告投放的『kill rule』『pause/scaling』等術語描述的是廣告帳戶操作規則（何時暫停/擴量廣告），『state』『memory』等詞在此語境指廣告成效狀態，非操控
-    agent 自身記憶或安全規則。
-- hash: sha256:17298ea9dfa8c324559fc2299df23f733465eada4b4da8756132eaa0e30a7805
-  rule_id: MP3
-  file: references/meta-decision-system.md
-  reason: 自我指涉誤判：廣告投放的『kill rule』『pause/scaling』等術語描述的是廣告帳戶操作規則（何時暫停/擴量廣告），『state』『memory』等詞在此語境指廣告成效狀態，非操控
-    agent 自身記憶或安全規則。
-- hash: sha256:89e3ba9f422358fe953c998e437ef228839593b1cd592b54a035d49a80cc2b16
-  rule_id: E1
-  file: references/conversion-tracking.md
-  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本
-    skill 外洩資料；目錄提交 CSV 中的網址是公開提交表單清單。
-- hash: sha256:87f4b2ba2597172de060b240ea16c62bbccf69f4e1e021376965bd3dd08c6b93
-  rule_id: EA2
-  file: references/conversion-tracking.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:c0ddc296cb8bd6375d52cf1a85a2897668cb0cbaf691014b2bec044bba587882
-  rule_id: RP1
-  file: references/agent-readiness.md
-  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
-- hash: sha256:0320862804e6f2dfbcd4e4b354f45a5a3a4a7ff0e8e41d60deeb15e3696207d1
-  rule_id: TM3
-  file: references/ga4-implementation.md
-  reason: 自我指涉誤判：GA4 除錯模式（DebugView `debug_mode=true`）的啟用方式是 Google Analytics 官方除錯功能的使用說明，非本 skill 主動關閉安全防護或設定不安全預設值。
-- hash: sha256:43816ed83e63004368e719f2144c52375e4a2d2d856352d320a4fcc85bc97c66
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：SKILL.md／references 內以相對路徑引用同一 skill 內的 references/assets 檔案（如 `references/scoring-criteria.md`、`assets/creative-review-template.html`），SkillSpector
-    的靜態掃描（--no-llm）沒有實際開啟這些檔案內容比對，因而回報『引用的檔案未完整檢查』；這是掃描模式限制，不是本 skill 隱藏未揭露內容。
-- hash: sha256:2ecffc2accc58ec7aff191fd718fb44b42e56a4da91caba7a446a9658e7791b9
-  rule_id: P9
-  file: SKILL.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:225fabe66c10b7a2fd4f16115e1862e47120dc77cd6a06377fd24c5129916558
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:13aaed068a219fbdc819299c8681eeb5d16871b92c9cfc6635e7d1e99d5e2f42
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:3b4a124747e983e5bff81ecc5fb2e798fe5d6bc9bc218bf7bd8f7687c88f4a6f
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:eb82b4abeb72e0b64e8b0f47829ef0743844e75bbfdce5259a46b11ea9dae8eb
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:8f2b3a41294e5d60fc3ff1d2dfdae27491c8e7bd3ad48cdeb252da7e85fa206c
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:8c79aaadb106db246edddf9b12653dab40d346efd5569d64fa17994400f7dfd6
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:12d1c7576a36a2348f7fba200dfea717e1ad8e927bcc319bb1f265d53ddf8663
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:b148de83adf89c593b97efc16ed5269e79d12d4304218c4e1f804beefea59056
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:5444ba2aae106c04ff3e50d1f26c0300eb844a633c62778a489cc4c4b64535c2
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:c01de38f830919d9e926adabcf11b06f75c25cee8923740e28abedc7394c0ace
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:f8c500ad7e82733628ddbd2d432fb2fae2efa08bf66807da5f8db936bc8e75ab
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:62da63cdfd1980d74e38d981faa2f4bb3923a9c482d26fc43063280c6f7421e1
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:5c18acbbc24f3c66686645c7cec9f9e282452a1895fd9f3faf0594f081d77096
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:d5d0ec5cdbf2ce202ec994850c1c5e432798cf0e242458695311840a72e71cf1
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:a7d3849f21a389005361130b906e1833b5f64c846aaaf95298451436c1ebdbfa
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:fc0f9141e80c2f5dbf124700721ede50df97083859d93eea050a2c94e1806ee2
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:29a0e4876a09cf69e7bf78aa01f69d0ff975c473a9912ea766bb6821c0c1e62c
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:11c2749d71306a5780434d7a9544dac3e1e1f96afd42729034f2bd6d83f16718
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:f06722b6e47b201970350c104b46ffb115c81854b52bd7d762802424ed24689f
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:e7f51d374b7e4ee3268f5e1b35b195fd218dcaec9fc3a544f5eea658cfc18e43
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:808ed48fce3ea0a63fd8fbc59ce6e036af2132a386b6def9fe9589c94921d27e
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:7a3d41c2af9e1f9fcdfdd172fa112ea111d85795263bc0aff60a57c1a673a6e1
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:04ad8289e1d56c75826269687f756895f77bbe78218219c6c35b3def91114489
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:24ad0947b871a45f727097331245e268d5f0c95973614d96e69e31c0f4661545
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
-- hash: sha256:d5355ee73eb14f61c22dd573c83d3e9af28614f5cbeae60f704bf00e5deee69a
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：SKILL.md／references 內以相對路徑引用同一 skill 內的 references/assets 檔案（如 `references/scoring-criteria.md`、`assets/creative-review-template.html`），SkillSpector
-    的靜態掃描（--no-llm）沒有實際開啟這些檔案內容比對，因而回報『引用的檔案未完整檢查』；這是掃描模式限制，不是本 skill 隱藏未揭露內容。
-- hash: sha256:0af9821816e80a94a4b13df0931fae849b12d494239a0dab752a715b84f03676
-  rule_id: PE3
-  file: references/measurement-paradigms.md
-  reason: 自我指涉誤判：文件內容描述行銷歸因方法論與 headless CMS 預覽權杖（preview token）等產業名詞，非本 skill 實際讀取憑證檔案。
-- hash: sha256:b94f6e84a8870b32a3877cb9e1a55500ca03154ebd548a433ed9d1a41769eb1a
-  rule_id: EA2
-  file: references/cancel-flow-patterns.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:f6dfc1bc2b0964a6da3ca495a78cacd147b44fdba8fb0fe19dac642dac8c2f0e
-  rule_id: AR1
-  file: references/frameworks.md
-  reason: 自我指涉誤判：文案框架／內部規劃文件中『no intro』『don't refuse — frame the timing』等字樣是行銷文案／對創辦人溝通的語氣建議（精簡開場、婉轉說明限制而非生硬拒絕），非要求
-    agent 對安全性請求一律不得拒絕。
-- hash: sha256:e1e8c3bbaa7c42521bcd167d0da8f6c985fe827b8e5c03e956f8bc601edfea88
-  rule_id: EA2
-  file: SKILL.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:663cee3072219534faee769e099a38bf7ea0c8e890add4eae395c51585f337c1
-  rule_id: PE3
-  file: references/headless-cms.md
-  reason: 自我指涉誤判：文件內容描述行銷歸因方法論與 headless CMS 預覽權杖（preview token）等產業名詞，非本 skill 實際讀取憑證檔案。
-- hash: sha256:6115303e5cd7829d4b8c0801793163a5139775398ac23ba9d5e823a2c5c1a852
-  rule_id: EA2
-  file: references/form.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:87e5cc75fbb132d877baca0f4385134b9349a853cb07b7b8524a3366e8b3c5a7
-  rule_id: AR2
-  file: references/directory-list.md
-  reason: 自我指涉誤判：常見錯誤檢查清單（如『忽略字數限制』『未加警告』）與操作指南中的『警告』字樣是教學內容本身在提醒要注意什麼，非要求 agent 省略警示或免責聲明。
-- hash: sha256:f5e35d92193d315cfef54b2538d96c50d70f449c18bacbb3d3711da33b3e21aa
-  rule_id: E1
-  file: references/submission-tracker-template.csv
-  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本
-    skill 外洩資料；目錄提交 CSV 中的網址是公開提交表單清單。
-- hash: sha256:5a72868beeb2d1dbc6907ec8b3568afe7fc8445dfc044ae7c0524eaad27c6747
-  rule_id: RA2
-  file: references/submission-tracker-template.csv
-  reason: 自我指涉誤判：directory-list.md／submission-tracker 是靜態的目錄提交對象清單（CSV/表格），revops 的自動化流程文件描述的是 CRM 內建的提醒／指派工作流程，均非建立
-    cron job 或開機腳本的跨 session 持久化機制。
-- hash: sha256:768cd59a86a235a253030e11aa7ee49c2c550932972c05f4f1efdffb543e5696
-  rule_id: E4
-  file: references/sponsorship-roi.md
-  reason: 自我指涉誤判：『Capture context, not just contact』等段落是教業務人員在活動後記錄對話重點以利跟進的建議，屬行銷流程術語『context』，非 agent
-    對話上下文外洩。
-- hash: sha256:3cf2c77dc8a609c595291f1e37162a1fbf7789194d08e436d387d250625271d9
-  rule_id: EA3
-  file: evals/evals.json
-  reason: 自我指涉誤判：marketing-council/evals/evals.json 的評測案例是測試 skill 依角色（如 David Ogilvy 顧問人格）產生對應輸出的預期行為，非技能範圍蔓延。
-- hash: sha256:3a7826bc7c7795787e830757c845d89113e9a1edfccf971f49909f0cc1c13aab
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：SKILL.md／references 內以相對路徑引用同一 skill 內的 references/assets 檔案（如 `references/scoring-criteria.md`、`assets/creative-review-template.html`），SkillSpector
-    的靜態掃描（--no-llm）沒有實際開啟這些檔案內容比對，因而回報『引用的檔案未完整檢查』；這是掃描模式限制，不是本 skill 隱藏未揭露內容。
-- hash: sha256:9223ca651b04d2d57e68793f9410ec0d3ca5372197e748fb558956c24955c8be
-  rule_id: EA4
-  file: evals/evals.json
-  reason: 自我指涉誤判：行銷案例／評測中提及『自動化』挽回流失客戶等情境是業務流程描述（如何設計 retention loop），非未設限的資源／API 濫用。
-- hash: sha256:387ba2132b9be84ea1a2c0aac27a4aebabac774a1d228a273bf60febd4b8c8f6
-  rule_id: AR1
-  file: references/funding-stage-unlocks.md
-  reason: 自我指涉誤判：文案框架／內部規劃文件中『no intro』『don't refuse — frame the timing』等字樣是行銷文案／對創辦人溝通的語氣建議（精簡開場、婉轉說明限制而非生硬拒絕），非要求
-    agent 對安全性請求一律不得拒絕。
-- hash: sha256:5b24097885124876b981c4e72dc9947d5503526d10faaad6dfa627f0869b60e1
-  rule_id: RA1
-  file: references/idea-cross-reference.md
-  reason: 自我指涉誤判：marketing-plan 文件說明『如何更新這份文件自己的表格與 SKILL.md 內的統計數字』是給人類維護者的文件維護流程說明，非 agent 於執行期間自我修改程式邏輯或權限。
-- hash: sha256:29c8c545c0655ce98812eef2bb3ba4c4aaf560f5188f63965f6ab763fdd49854
-  rule_id: AE4
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
-- hash: sha256:ae1327923bc13fb7ee70b54ccbf022893208bd17ce508c5b4316ed64d0fe78ab
-  rule_id: AS3
-  file: references/idea-cross-reference.md
-  reason: 自我指涉誤判：marketing-plan 文件以相對路徑引用同倉庫 marketing-ideas skill 的 SKILL.md／references 作為資料來源說明（Sources
-    段落），是刻意設計的跨 skill 引用，非執行期間窺探其他已安裝 skill。
-- hash: sha256:f5700069dae258cb76ba56c2b812db59e1d7e691bedcccd07dab83f7dc196471
-  rule_id: AE4
-  file: references/methodology.md
-  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
-- hash: sha256:7fec32b923389809633189130e810740786a9d15d126062869ac60b3d406ddc1
-  rule_id: EA2
-  file: references/methodology.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:c7138cd5516fdf81be32fb4c0fbbbb58b93c2c155b79388e5c8ebd595c59127e
-  rule_id: AE4
-  file: references/plan-template.md
-  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
-- hash: sha256:35227e55f07f76c34b22ead0a151c0588b359f75fc6807389b88d4dbec9eef7a
-  rule_id: AE4
-  file: references/team-and-agency-model.md
-  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
-- hash: sha256:73f4fbb6e5ee753074ffedec0b6175a4ed1b90ce00e288455b870ccaa7c2c1f3
-  rule_id: P6
-  file: references/experiments.md
-  reason: 自我指涉誤判：付費牆實驗文件中『re-show rules』『escalating urgency』等段落是產品訊息顯示邏輯的 A/B 測試設計說明，非外洩系統提示或內部規則。
-- hash: sha256:aa7a43b2ebb5d6a999a3df8a5966929cb279e81e17f756bf5b3c5e1907abaf69
-  rule_id: AS2
-  file: evals/evals.json
-  reason: 自我指涉誤判：prospecting/evals/evals.json 是評測案例，內容描述『建議使用者了解 Truelist 有官方 MCP server 可用』的預期回答，並非本
-    skill 實際讀取或存取 MCP 設定檔。
-- hash: sha256:891976910e83924dccf011d79142c62246da08d41711d195761d110a73cfed35
-  rule_id: EA2
-  file: references/compliance.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:8be9b4253b06949497dc2125509e19e284e52be6c328765c67f7d34783e98899
-  rule_id: AR2
-  file: references/newsjacking.md
-  reason: 自我指涉誤判：常見錯誤檢查清單（如『忽略字數限制』『未加警告』）與操作指南中的『警告』字樣是教學內容本身在提醒要注意什麼，非要求 agent 省略警示或免責聲明。
-- hash: sha256:5a4ff9ff024e5878f1f37446761d8ab0d9372a7cc20678ba08cfd9f7f193868d
-  rule_id: EA2
-  file: SKILL.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:96f881b5307291fd7d5ff3db499944a82c882ff7a2c0c4f49da227cdaa540762
-  rule_id: RA2
-  file: references/automation-playbooks.md
-  reason: 自我指涉誤判：directory-list.md／submission-tracker 是靜態的目錄提交對象清單（CSV/表格），revops 的自動化流程文件描述的是 CRM 內建的提醒／指派工作流程，均非建立
-    cron job 或開機腳本的跨 session 持久化機制。
-- hash: sha256:2a9a81ef6b53f2e66f86775d5e15c9f72d341abc92c24e2fb0ce44258ec9e158
-  rule_id: EA2
-  file: references/demo-scripts.md
-  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求
-    agent 未經同意執行高風險操作。
-- hash: sha256:e61fca9ed0e02223194a031259ecfe525e60025e6fe92d3b30870f8db8e6a4a4
-  rule_id: OH1
-  file: references/schema-examples.md
-  reason: '自我指涉誤判：schema/references/schema-examples.md 示範的 `dangerouslySetInnerHTML={{ __html: JSON.stringify(schema)
-    }}` 是 Next.js/React 官方文件推薦的 JSON-LD 結構化資料標準寫法，資料來源是站方自己的 schema 物件，非未過濾的外部輸入。'
-- hash: sha256:228ea229b58d51c7043229f3d3d15617fc7a9baaa132e447b8521707e4575fbb
-  rule_id: RP1
-  file: SKILL.md
-  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
-- hash: sha256:23417fd9c17b9df970ac702db814475a6f1a26e3357e0a9a64c15acc0d810191
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：第 196 行 arsenic 命中屬蛋白粉重金屬檢測廣告範例，內容是比較檢測結果與安全範圍，非有害指令。
-- hash: sha256:4f696d7c1b10700eff4c45271f31b516525d5db99d44e16caad106446bc9c9a2
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：第 203 行 arsenic 命中屬蛋白粉重金屬檢測廣告範例，內容是比較檢測結果與安全範圍，非有害指令。
-- hash: sha256:7c1e368327ef7e6649a04b5b105e531c6d735adf45d79215f38befbe3e7a5df3
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：第 206 行 arsenic 命中屬蛋白粉重金屬檢測廣告範例，內容是比較檢測結果與安全範圍，非有害指令。
-- hash: sha256:04785989e1377c273c181fa801b2ad58dc26f3e105621f5409eeb293d46881a7
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：第 208 行 arsenic 命中屬蛋白粉重金屬檢測廣告範例，內容是比較檢測結果與安全範圍，非有害指令。
-- hash: sha256:a11f798c3ddae78c2f4d8f8b396d2baed1b8ed5b8d02361fa2d73e5a3942bb1d
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：ad-creative 明確引用同一 skill 內的 assets/creative-review-template.html；靜態掃描未完整展開該相對路徑，不是隱藏內容。
-- hash: sha256:dbee98ad3fb4900d7272f76e42be82bcbe7aa412d6876248203df4d91bb50787
-  rule_id: RP1
-  file: references/generative-tools.md
-  reason: 自我指涉誤判：文件中的 npx 套件安裝範例是使用者可選的參考指令，非 skill 自動執行或未鎖版號的內建依賴。
-- hash: sha256:73c7dab227ee86b6449426241d0f99bec372298505f7175b616823612ef31d68
-  rule_id: MP3
-  file: references/meta-decision-system.md
-  reason: 自我指涉誤判：Swap rules 描述廣告素材成效決策規則，非修改 agent 記憶或安全規則。
-- hash: sha256:30c9bea35eac3c51ffdfd0952972264debe2afb6733cc9a4a5f74030cd78f419
-  rule_id: RP1
-  file: SKILL.md
-  reason: 自我指涉誤判：ai-seo SKILL.md 的 npx 最新版命令是使用者可選的文件範例，非 skill 自動執行或內建依賴。
-- hash: sha256:3475abf34f3ce7042954b6556c74f716fa9f5b286409ce26313a8ade1ee1fd67
-  rule_id: RP1
-  file: evals/evals.json
-  reason: 自我指涉誤判：ai-seo eval 的 npx 最新版命令是受測文件範例，非 skill 自動執行或內建依賴。
-- hash: sha256:2fb1cffaf17ea0fb7f8dd582f95efd2ba46e735a5732aa8e174debf06260374b
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：第 47 行連續空白來自大型 Markdown 評分表的欄位對齊，不是藏匿指令。
-- hash: sha256:002c378d8ac014974f22f21c2c1655f7f3df8b48b3e6c6f016e4693ab133343d
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：第 108 行連續空白來自大型 Markdown 評分表的欄位對齊，不是藏匿指令。
-- hash: sha256:a300a056db354ef6b227c12a6463126b1a13096ace66a4b78525e00ae98798cb
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：第 75 行連續空白來自大型 Markdown 評分表的欄位對齊，不是藏匿指令。
-- hash: sha256:c582c537311c8003519fce18db2d670ac8728a9505d61c030c6588bafd5f8772
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：第 129 行連續空白來自大型 Markdown 評分表的欄位對齊，不是藏匿指令。
-- hash: sha256:bc6e344f9f84e6dae42e27f5be734863f5106b0e02bc8fa40d39c0d5be0e0a31
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：第 181 行連續空白來自大型 Markdown 評分表的欄位對齊，不是藏匿指令。
-- hash: sha256:0323d5fadc712f62c4cc6d45e82834493a882cae2f3c90273de9bb20510c2fa0
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：第 133 行引用 attribution skill 內的 references/first-party-tracking.md；靜態掃描未完整展開相對路徑，不是隱藏內容。
-- hash: sha256:6f6ceaeb70e45037e4b081d87f7f70b72a4de98c662bef65816cdc1554bfe4c1
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：第 169 行引用 attribution skill 內的 references/first-party-tracking.md；靜態掃描未完整展開相對路徑，不是隱藏內容。
-- hash: sha256:a5e22945d530021d90eaf91f43700c08c8d9031161242b3279c7f2ddf35a00d1
-  rule_id: RA2
-  file: references/directory-list.md
-  reason: 自我指涉誤判：plist 是目錄提交對象表格中的平台文字，不是建立開機持久化項目。
-- hash: sha256:b795ef7fa30520372a680868ab78e3f7dcefe8d7f147e78b7746bbf5bf08c84e
-  rule_id: E4
-  file: SKILL.md
-  reason: 自我指涉誤判：Capture context 是記錄活動對話重點以利後續跟進的業務建議，不是竊取 agent 對話內容。
-- hash: sha256:b14ba2fee2c940095b22d4f41de694a3334a4b314e9a50d6cdabf1f82366f718
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-loops 引用同一 skill 內的 references/loop-catalog.md；靜態掃描未完整展開相對路徑，不是隱藏內容。
-- hash: sha256:2eaebbc8a9b11d50fd3cc033f7c82b236cccf1d40eb6dd1ffff1181a90d76e0a
-  rule_id: EA4
-  file: evals/evals.json
-  reason: 自我指涉誤判：eval 中的 loop forever 是行銷迴圈概念名稱，不是要求 agent 無界限執行。
-- hash: sha256:02fdd33420325ebb106bc5b9b94b4035968e0ce75a49380db06c1f5d78bd9f1f
-  rule_id: EA4
-  file: references/loop-catalog.md
-  reason: 自我指涉誤判：loop-catalog 中的 loop forever 是行銷迴圈概念名稱，不是要求 agent 無界限執行。
-- hash: sha256:8da785b89c5627b26f771784812d8da03ebc72fde258066f8caf6cf1c259e87d
-  rule_id: RA2
-  file: references/automation-playbooks.md
-  reason: 自我指涉誤判：Create task for 描述 CRM 內建任務指派流程，不是建立 cron 或開機持久化機制。
-- hash: sha256:faa2236273f1cc3341edf5cc98bbbf379897e4b81a5e42796d3ce118b6f257a3
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：聚合後第二輪第 203 行 arsenic 命中仍屬同一蛋白粉重金屬檢測廣告範例，非有害指令。
-- hash: sha256:fca99b28b77f5b5d20d5be5697934922f3d4e88eeea84cc054f7c949286329b7
-  rule_id: P9
-  file: references/scoring-criteria.md
-  reason: 自我指涉誤判：聚合後第二輪第 108 行連續空白仍來自 Markdown 評分表欄位對齊，不是藏匿指令。
-- hash: sha256:269c046a70ed9914dca6a2815fe78129923deb293bb944dee445e49f5d386986
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：聚合後第二輪第 169 行仍是 attribution skill 內 references/first-party-tracking.md 的相對引用，不是隱藏內容。
-- hash: sha256:6b9a939ca0e4c5b745568de9004acd0c0fefaff500dac3387c1159ae25ac4b4d
-  rule_id: EA4
-  file: references/loop-catalog.md
-  reason: 自我指涉誤判：聚合後第二輪的 loop forever 仍是行銷迴圈概念名稱，不是要求 agent 無界限執行。
-- hash: sha256:529a7ef096ed6a16e1de68a84e42314f25c26e95c6dee82cbccbf2b28393a208
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：聚合後第三輪第 206 行 arsenic 命中仍屬同一蛋白粉重金屬檢測廣告範例，非有害指令。
-- hash: sha256:6d25924cdd3fbabc1173e8e556cf8cf50a5108e1228293472fec2c82b96dbbb3
-  rule_id: P5
-  file: assets/creative-review-template.html
-  reason: 自我指涉誤判：聚合後第四輪第 208 行 arsenic 命中仍屬同一蛋白粉重金屬檢測廣告範例，非有害指令。
-- hash: sha256:414b1bcaa5cf07ba523d58ca415f88460d37aaeb2b50221761be13065e720195
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：重排後第 342 行是 ad-creative skill 內 bundled HTML template 的明確相對引用；靜態掃描標記 partial，不是隱藏內容。
-- hash: sha256:63860bc525e821687c6236a3fe05b30a387f39f56924a81c40b7f7df28d8dea7
-  rule_id: AR2
-  file: SKILL.md
-  reason: 自我指涉誤判：without warning 出現在廣告策略反例／風險警語，提醒不要省略揭露，並非要求 agent 移除安全警告。
-- hash: sha256:09f92d01622ae3bb85191e9ac7f555e43dca4740b26901c72fb1f149dd39cf01
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 37 行引用已存在的 references/methodology.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:46783234ac5ae2db1581e7e80d3daf371fb2860da1644bbea598c8d36e298d19
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 41 行引用已存在的 references/methodology.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:4390696711457664bcebfbc84bbd3c863f07531fd313fd9bc68d263038f23c55
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 260 行引用已存在的 references/methodology.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:251b7e2b64f1a5b665e865376ef1319b52c9adb2bf8c005e04db3875c3ed49d3
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 277 行引用已存在的 references/methodology.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:c834091376101c0715a951c5c65e6b366b906d13dc4bcff477560370ac8328c5
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 47 行引用已存在的 references/current-state-rubric.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:414454ba0d84ed5af352e61e0a954f5f62b63431995a4fe7c66e43046d424755
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 71 行引用已存在的 references/current-state-rubric.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:72d225c80aa951bc726924256e88933e32f7d70b7e398a1abe00dbf0e8745c42
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 125 行引用已存在的 references/current-state-rubric.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:23935ddc4f2cf6292d177ac49c9a36ea510178c4a9263579c366a0927621a1ff
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 67 行引用已存在的 references/plan-template.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:942a60f6c497bd0ebc347514915520678efce87f063a106264221e7d145f446f
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 87 行引用已存在的 references/aarrr-framework.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:6c4afa37e52f43ae244fe18cb271e3493c63ba649a0a95d911f47a4aa471c5be
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 131 行引用已存在的 references/idea-cross-reference.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:0cd06204968b82141bd7f29626f2b8f0f2656130ce4c0ff69fa64b94a7e944be
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 135 行引用已存在的 references/ops-stack-mapping.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:1e7f3158d1ae2a231a7cf9406b5afe44774e1c38e69403bcb2c1108ad318d067
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 143 行引用已存在的 references/ops-stack-mapping.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:5b30e07fe206e10ed7df7d2ba1b070a73a1a92267e0e0cd213f1c4d0d448e066
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 149 行引用已存在的 references/funding-stage-unlocks.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:c8f847f86fcbb622bcd9c223d165c49a4070966fc4388c2bd9d0fd550613bc2e
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 160 行引用已存在的 references/budget-planning.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:57f2b9648f46fae5f09be909b0dd9722500871827b4ba0d451c354ec4ca890ca
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 171 行引用已存在的 references/growth-patterns.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:54879cfc2ff22c7e5057daf45ece2b74601d96d8256f3dcd421aab29003732e5
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 181 行引用已存在的 references/team-and-agency-model.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:f7480dfb952b044473b2aab08ba118d965c2132044eaefdf9625281af26c1291
-  rule_id: AE1
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 第 212 行引用已存在的 references/client-types.md；靜態 coverage 標記 partial，不是隱藏內容。
-- hash: sha256:f7dda7dae4688d3f31fcd96e3b9f8f1ca35c8cea6805e73f71e62ab5314cc609
-  rule_id: AE4
-  file: SKILL.md
-  reason: 自我指涉誤判：marketing-plan 使用「π-shaped marketer」商業能力模型，Greek π 與 Latin 文字混排是專業術語，不是 Unicode 混淆攻擊。
-- hash: sha256:495aae184fe0f1db8ccc18e918ed4b4490546c8bba0979465f483181c98ff61a
-  rule_id: AE4
-  file: references/methodology.md
-  reason: 自我指涉誤判：methodology 使用「π-shaped」商業能力模型，Greek π 與 Latin 文字混排是專業術語，不是 Unicode 混淆攻擊。
-- hash: sha256:0b5572cc17d0ba35a9ba176bd3cf8ce76b940744ad83616c7b293574a1259242
-  rule_id: AE4
-  file: references/plan-template.md
-  reason: 自我指涉誤判：plan-template 使用「π-shaped」商業能力模型，Greek π 與 Latin 文字混排是專業術語，不是 Unicode 混淆攻擊。
-- hash: sha256:4010d32d36bf31197384721765a255e71fd723ebc9060f30ffc8c371555b0b99
-  rule_id: AE4
-  file: references/team-and-agency-model.md
-  reason: 自我指涉誤判：team-and-agency-model 使用「π-shaped」商業能力模型，Greek π 與 Latin 文字混排是專業術語，不是 Unicode 混淆攻擊。
-- hash: sha256:4ef93803587f46d55522068e0f9983232a4965dcf1455d4c20de65904b0d1edb
+- hash: sha256:5594d3ea2fe694131d155a055af4950cf4a4c0bf427045a9b4b1d4f718514193
   rule_id: P5
   file: assets/creative-review-template.html
   reason: 範例廣告以第三方實驗室檢測砷、鎘、鉛並顯示合格結果，目的是示範證據式產品文案，不含製造、取得或使用有害物質的指示。
-- hash: sha256:2bc1fc815d11a389ad657ad3d3697ecafddaae56488bce6a78184fb82ab6d811
+- hash: sha256:2f218ae9fac584c8ced929c635a9b43eea435f866c00212d2f3292987d299c78
   rule_id: P2
   file: assets/creative-review-template.html
   reason: HTML 開頭註解是維護者使用說明，只要求替換同檔案內的範例 JSON；不要求越權、外傳資料或覆蓋系統指令。
+- hash: sha256:e797bac9502b22188df682dc4e3f499bbf8979910c2e614778e6560f0a5f2c87
+  rule_id: E1
+  file: references/generative-tools.md
+  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本 skill 外洩資料；目錄提交
+    CSV 中的網址是公開提交表單清單。
+- hash: sha256:7038e5a89fabadf31b97617dc9e6627e88088ed42bb5d94ce49212d8e384532f
+  rule_id: E1
+  file: references/generative-tools.md
+  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本 skill 外洩資料；目錄提交
+    CSV 中的網址是公開提交表單清單。
+- hash: sha256:0ada87d1f94ef3b64c0bf3917a65de43670fff26116c4610b8db6790c27c70b7
+  rule_id: E1
+  file: references/generative-tools.md
+  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本 skill 外洩資料；目錄提交
+    CSV 中的網址是公開提交表單清單。
+- hash: sha256:c953f44c757ed81d154ef27e6a001c3d27f9eefcc933b9a4f10b7f5fc9aebd67
+  rule_id: RP1
+  file: references/generative-tools.md
+  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
+- hash: sha256:bd2bd687026bc0c637e2ec36ba77cc1eeefaf2ebfd8d382666e2737cb42a14dd
+  rule_id: RP1
+  file: references/generative-tools.md
+  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
+- hash: sha256:024f1bebcfbc4ae4dff23ad9732d616c0709fa065dd6bc01342128e9e629e5c3
+  rule_id: RP1
+  file: references/imessage-video-ads.md
+  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
+- hash: sha256:6e265b99fd5c74554cb2daff4eaa26463ff86de6919451bf6580086fab2ad1ff
+  rule_id: P1
+  file: references/audit-guardrails.md
+  reason: 自我指涉誤判：文件教導 agent 把擷取到的網頁／競品廣告內容視為資料而非指令，範例字面提及『ignore previous instructions』是防禦說明，非真實指令覆寫。
+- hash: sha256:345834933327f8788902ef8f6fce0d20164ac405fc0ac9285a3690ca36dec50c
+  rule_id: MP3
+  file: references/b2b-paid-playbook.md
+  reason: 自我指涉誤判：廣告投放的『kill rule』『pause/scaling』等術語描述的是廣告帳戶操作規則（何時暫停/擴量廣告），『state』『memory』等詞在此語境指廣告成效狀態，非操控 agent 自身記憶或安全規則。
+- hash: sha256:4c0cf2d6e5d8e8184231bd89d05e6c0fd84e96334fe869beb28447779b3b97f8
+  rule_id: MP3
+  file: references/meta-decision-system.md
+  reason: 自我指涉誤判：廣告投放的『kill rule』『pause/scaling』等術語描述的是廣告帳戶操作規則（何時暫停/擴量廣告），『state』『memory』等詞在此語境指廣告成效狀態，非操控 agent 自身記憶或安全規則。
+- hash: sha256:326ff96bf969e8f671ccefbd45a45e3d058e8ce86d6eee02dbd45544034d84f9
+  rule_id: E1
+  file: references/conversion-tracking.md
+  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本 skill 外洩資料；目錄提交
+    CSV 中的網址是公開提交表單清單。
+- hash: sha256:4dd75981d5a6a52d641c6a74b85920108d63cd4037752a754d0f747a6637c4b4
+  rule_id: EA2
+  file: references/conversion-tracking.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:5988ecefcc2fb8fe0572259825fd1796a2318bf6023cdf11d702e56071d3445b
+  rule_id: RP1
+  file: references/agent-readiness.md
+  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
+- hash: sha256:3b0e61fb21b94d0ca8e49e7d9a982c79da397685c4ec58cfddfc819e4bef37f3
+  rule_id: TM3
+  file: references/ga4-implementation.md
+  reason: 自我指涉誤判：GA4 除錯模式（DebugView `debug_mode=true`）的啟用方式是 Google Analytics 官方除錯功能的使用說明，非本 skill 主動關閉安全防護或設定不安全預設值。
+- hash: sha256:02c78468d9b73710edfcf6561f546d5518710366b3008e500b00ad8ff672d50f
+  rule_id: P9
+  file: SKILL.md
+  reason: 自我指涉誤判：references 內大型 Markdown 表格（評分標準、對照表）因欄位對齊產生大量空白／長分隔線，被誤判為可能藏匿隱藏指令的版面留白，實際只是表格格式排版。
+- hash: sha256:a73e20fe211d0c42ad4c55075832466b0b1acde89f0692f43414557c63b882b4
+  rule_id: PE3
+  file: references/measurement-paradigms.md
+  reason: 自我指涉誤判：文件內容描述行銷歸因方法論與 headless CMS 預覽權杖（preview token）等產業名詞，非本 skill 實際讀取憑證檔案。
+- hash: sha256:4173293f134fa802e70edb83fee848b1c19ed33bd12e569bdd3a24b5f347f465
+  rule_id: EA2
+  file: references/cancel-flow-patterns.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:9a3d9a1919c93fff5890750cf515679054d54fc39df15620b6e321e1388eb492
+  rule_id: AR1
+  file: references/frameworks.md
+  reason: 自我指涉誤判：文案框架／內部規劃文件中『no intro』『don't refuse — frame the timing』等字樣是行銷文案／對創辦人溝通的語氣建議（精簡開場、婉轉說明限制而非生硬拒絕），非要求 agent
+    對安全性請求一律不得拒絕。
+- hash: sha256:46126eda3a189f1555977e6a0947711c2e1598107efb77f67b0e0d7c5b2b0d51
+  rule_id: EA2
+  file: SKILL.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:d7166c7a295e87ef48d9eeedb4d927c80e1a3c480f0f6d6dddf51b9e9b725bf6
+  rule_id: PE3
+  file: references/headless-cms.md
+  reason: 自我指涉誤判：文件內容描述行銷歸因方法論與 headless CMS 預覽權杖（preview token）等產業名詞，非本 skill 實際讀取憑證檔案。
+- hash: sha256:cda14cdc1e009e5ec315a63f7dc1ebf846ca61f01e8054e6926aa3ba7488707f
+  rule_id: EA2
+  file: references/form.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:0b42c50eaed62459c4a8f1d5b8625f6a2f0cf971421c3c764e881f08e2c51cab
+  rule_id: AR2
+  file: references/directory-list.md
+  reason: 自我指涉誤判：常見錯誤檢查清單（如『忽略字數限制』『未加警告』）與操作指南中的『警告』字樣是教學內容本身在提醒要注意什麼，非要求 agent 省略警示或免責聲明。
+- hash: sha256:a43ae9a7c5b51389e41f0ce78d81f7b9a4d68a6d39d7ca529b9900ea61e42415
+  rule_id: E1
+  file: references/submission-tracker-template.csv
+  reason: 自我指涉誤判：references 內第三方 API／追蹤像素的官方文件範例程式碼（Gemini、ElevenLabs、TikTok pixel 等）示範如何呼叫該服務自身的 API，是教學範例非本 skill 外洩資料；目錄提交
+    CSV 中的網址是公開提交表單清單。
+- hash: sha256:b9786cbb9587640a04cc4363fe309a186c6ba625891705169ce7b2ac6b331a35
+  rule_id: RA2
+  file: references/submission-tracker-template.csv
+  reason: 自我指涉誤判：directory-list.md／submission-tracker 是靜態的目錄提交對象清單（CSV/表格），revops 的自動化流程文件描述的是 CRM 內建的提醒／指派工作流程，均非建立 cron
+    job 或開機腳本的跨 session 持久化機制。
+- hash: sha256:a9e3ec19ed95c28245f8457d80330f7dc7b32be0b05891f70ba997e603c2428d
+  rule_id: E4
+  file: references/sponsorship-roi.md
+  reason: 自我指涉誤判：『Capture context, not just contact』等段落是教業務人員在活動後記錄對話重點以利跟進的建議，屬行銷流程術語『context』，非 agent 對話上下文外洩。
+- hash: sha256:b64b637af90a233c9dc02db613d4cc7e1843bd796215698e0b0cc2219432c9a8
+  rule_id: EA3
+  file: evals/evals.json
+  reason: 自我指涉誤判：marketing-council/evals/evals.json 的評測案例是測試 skill 依角色（如 David Ogilvy 顧問人格）產生對應輸出的預期行為，非技能範圍蔓延。
+- hash: sha256:322095ac8e240cbb7b971f1737123626b669565df917e9475092d3ff3a52c8d0
+  rule_id: EA4
+  file: evals/evals.json
+  reason: 自我指涉誤判：行銷案例／評測中提及『自動化』挽回流失客戶等情境是業務流程描述（如何設計 retention loop），非未設限的資源／API 濫用。
+- hash: sha256:4b64354136c1e5900afda841a42294de2269055de918c117ccbe328d3cf630de
+  rule_id: AR1
+  file: references/funding-stage-unlocks.md
+  reason: 自我指涉誤判：文案框架／內部規劃文件中『no intro』『don't refuse — frame the timing』等字樣是行銷文案／對創辦人溝通的語氣建議（精簡開場、婉轉說明限制而非生硬拒絕），非要求 agent
+    對安全性請求一律不得拒絕。
+- hash: sha256:dd5fc703ca54c03dfc13aadcd784c37d4068a5a83ea67b8361212b0c5e3c4a34
+  rule_id: RA1
+  file: references/idea-cross-reference.md
+  reason: 自我指涉誤判：marketing-plan 文件說明『如何更新這份文件自己的表格與 SKILL.md 內的統計數字』是給人類維護者的文件維護流程說明，非 agent 於執行期間自我修改程式邏輯或權限。
+- hash: sha256:20c60f1a6df932e2a9002ff684f27275ad999ca894d03668c8aef2a98900b038
+  rule_id: AE4
+  file: SKILL.md
+  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
+- hash: sha256:2b8dee725a22019cb127e128e193c10d09f36597dd96a395c973482015e83503
+  rule_id: AS3
+  file: references/idea-cross-reference.md
+  reason: 自我指涉誤判：marketing-plan 文件以相對路徑引用同倉庫 marketing-ideas skill 的 SKILL.md／references 作為資料來源說明（Sources 段落），是刻意設計的跨 skill
+    引用，非執行期間窺探其他已安裝 skill。
+- hash: sha256:ca7f585e9b35c2f99b15ca7f1a285ea66f2571aba6ec3383b2a92084929e1b5f
+  rule_id: AE4
+  file: references/methodology.md
+  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
+- hash: sha256:e38f8ad9c2bcba01c38caf7731179911c9d81cd647e880590b2e31b9ec064dfe
+  rule_id: EA2
+  file: references/methodology.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:fa2cd960ee65c13dc7d4bb5605351938a364ff4d36addf9ee4664f434a52cbd3
+  rule_id: AE4
+  file: references/plan-template.md
+  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
+- hash: sha256:074aa93c1bb795ddbdaf616f76627244a15782e1340a6cc24afd402378d9c458
+  rule_id: AE4
+  file: references/team-and-agency-model.md
+  reason: 自我指涉誤判：marketing-plan 系列文件開頭出現的字元組合被誤判為可疑 Unicode／混合腳本，實際內容為一般繁體/英文商業文件排版符號，非惡意編碼。
+- hash: sha256:34af5212cea02de1786583103d7b3511402ca762a3fc6c688bdeb31368ecf655
+  rule_id: P6
+  file: references/experiments.md
+  reason: 自我指涉誤判：付費牆實驗文件中『re-show rules』『escalating urgency』等段落是產品訊息顯示邏輯的 A/B 測試設計說明，非外洩系統提示或內部規則。
+- hash: sha256:ba87c079c7031faceebb6204dc8f67834826061e2ce4cc923d2a71c6dace0631
+  rule_id: AS2
+  file: evals/evals.json
+  reason: 自我指涉誤判：prospecting/evals/evals.json 是評測案例，內容描述『建議使用者了解 Truelist 有官方 MCP server 可用』的預期回答，並非本 skill 實際讀取或存取 MCP 設定檔。
+- hash: sha256:cc122e2de6086d565f6ea6289489074dfca7b06bba850d67b0efa3601cf7de16
+  rule_id: EA2
+  file: references/compliance.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:617e8ec45d4747527804f24b3d592d0e5f46dde34b9ef8f30322208fa7c245d7
+  rule_id: AR2
+  file: references/newsjacking.md
+  reason: 自我指涉誤判：常見錯誤檢查清單（如『忽略字數限制』『未加警告』）與操作指南中的『警告』字樣是教學內容本身在提醒要注意什麼，非要求 agent 省略警示或免責聲明。
+- hash: sha256:e1343a0dd14053ef6adc70c858644ac0ef7169ab541a9ab8b4586228df08882f
+  rule_id: EA2
+  file: SKILL.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:8a4dd68ca849bc60c1235ef4eec6dbe72b340ae797d07d6bd8da84eab9378613
+  rule_id: RA2
+  file: references/automation-playbooks.md
+  reason: 自我指涉誤判：directory-list.md／submission-tracker 是靜態的目錄提交對象清單（CSV/表格），revops 的自動化流程文件描述的是 CRM 內建的提醒／指派工作流程，均非建立 cron
+    job 或開機腳本的跨 session 持久化機制。
+- hash: sha256:345c2e6f7e3317e3e348e77b1b17c3d997a7cae68ea7627b290ee31faab5a2ce
+  rule_id: EA2
+  file: references/demo-scripts.md
+  reason: 自我指涉誤判：文件中『don't ask user to copy/paste』『bulk-scraped without verification』等段落是流程效率建議或風險警語（提醒不要這樣做），非要求 agent 未經同意執行高風險操作。
+- hash: sha256:17750438b4dcc200a4bbf6ec5dc9d91d53b360ec7db64c22d60fdc225fd1fe45
+  rule_id: OH1
+  file: references/schema-examples.md
+  reason: '自我指涉誤判：schema/references/schema-examples.md 示範的 `dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}`
+    是 Next.js/React 官方文件推薦的 JSON-LD 結構化資料標準寫法，資料來源是站方自己的 schema 物件，非未過濾的外部輸入。'
+- hash: sha256:7e18c8dffef9db487eec4aace15b9b428c7a1e80fc1e2a384d034fdc7ec9e2c8
+  rule_id: RP1
+  file: SKILL.md
+  reason: 自我指涉誤判：文件中『npx <pkg>@latest』等安裝範例是提供給使用者參考的文件文字，非本 skill 綁定執行且未鎖版號的 MCP／CLI 設定。
