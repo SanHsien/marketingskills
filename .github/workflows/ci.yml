@@ -51,6 +51,7 @@ jobs:
           tools/check_upstream_updates.py
           tools/check_dependency_freshness.py
           tools/check_links.py
+          tools/run_skillspector.py
           tools/validate_skills.py
 
       - name: Ruff (E9 + F)
@@ -60,6 +61,7 @@ jobs:
           tools/check_upstream_updates.py
           tools/check_dependency_freshness.py
           tools/check_links.py
+          tools/run_skillspector.py
           tools/validate_skills.py
 
       - name: Pytest
@@ -84,9 +86,9 @@ jobs:
         run: python tools/check_links.py
 
   test-windows:
-    name: test (windows / py3.14)
+    name: test (windows / py3.13)
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     env:
       PYTHONUTF8: "1"
       PYTHONIOENCODING: "utf-8"
@@ -99,15 +101,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.14"
+          python-version: "3.13"
 
       - name: Set up Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
 
-      - name: Install test dependencies
-        run: python -m pip install -r requirements-dev.txt
+      - name: Install test dependencies and pinned SkillSpector
+        run: |
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -r requirements-security.txt
 
       - name: Canonical Windows development gate
         shell: pwsh

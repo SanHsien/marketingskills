@@ -382,7 +382,7 @@ Loops are grouped by function. Naming follows the "The X loop" convention.
   1. Score accounts on churn-risk signals (usage decline, seat drop, dunning, support escalations).
   2. Segment newly at-risk accounts.
   3. Match each to the right intervention (re-engagement email, CS outreach, offer); stage it.
-- **Self-check**: Is the "drop" a real trend or a weekend/holiday dip? Compare to the account's own baseline.
+- **Self-check**: Is the decline a real trend or a weekend/holiday dip? Compare to the account's own baseline.
 - **State / idempotency**: Never re-trigger on an account already in an active intervention; enforce a cooldown between attempts.
 - **Stop / bail-out**: No newly at-risk accounts → skip. Escalate high-value accounts to a human rather than auto-emailing.
 - **Output**: A prioritized at-risk list with staged interventions.
@@ -528,7 +528,7 @@ Loops are grouped by function. Naming follows the "The X loop" convention.
   3. Route persistent failures to a human/CS.
 - **Self-check**: Is the failure involuntary (card issue) vs. an intentional cancel? Don't dun someone who chose to leave.
 - **State / idempotency**: Track dunning stage per account; follow the retry schedule; stop on recovery.
-- **Stop / bail-out**: After the final retry, escalate/deactivate per policy — don't loop forever.
+- **Stop / bail-out**: After the final retry, escalate or deactivate per policy.
 - **Output**: An active dunning queue + recovery status.
 
 ---

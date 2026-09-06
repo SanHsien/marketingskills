@@ -138,3 +138,28 @@ OPEN，內容是往這個 repo 塞一整個加密貨幣交易預測 app（`crypt
 主題（行銷技能庫）無關，上游也沒有合併。
 
 **觸發條件**：上游合併它時再看——那時它就會經由 commit 軸抵達。
+
+## 2026-09-06：安全掃描必須完整，並保留產品語意
+
+**決定**：Windows canonical gate 使用釘定版 SkillSpector，任一適用 analyzer 為
+degraded、partial、skipped、failed、unaccounted 或非預期 disabled 都失敗；fresh clone
+預設 Python 3.13，因目前 `yara-python` 沒有 Python 3.14 的 Windows wheel。Ubuntu 的一般
+測試矩陣仍涵蓋 Python 3.9–3.14。
+
+**產品檔調整**：只做避免靜態解析器誤切語句的等義正規化：將不成對縮寫、部分 code span、
+JavaScript template literal 與容易觸發無界迴圈規則的否定句改寫；ASO 評分表移除欄寬填充空白；
+creative review 範例保留同一檢測結果，但不重複列出相同污染物名稱。操作步驟、停止條件與產品
+能力沒有擴張。所有原先降級的 skill 都以 0 finding、0 limitation 重新掃描。
+
+**baseline 原則**：只保留逐筆審查後的精確 fingerprint；可直接消除的誤判不加入 baseline。
+變更產品文案時若 fingerprint 改變，必須重新審查，不可用寬鬆規則整批忽略。
+
+**完整性契約**：gate 核對釘定 `--no-llm` revision 的 exact 24-analyzer set 與 100%
+元件覆蓋，缺少或多出 analyzer、未解釋計數、limitation 都失敗。產品說明中的一般文字常被
+reference resolver 當成 local path；僅允許 nonfatal `reference_unresolved` 保留頂層
+`partial`，而且 ledger 與 `references` 的 source-line key set 必須完全一致。其他 exception
+仍 fail closed。
+
+**資源預算**：每個靜態分析預設 300 秒、每個 skill workflow 900 秒。`marketing-plan`
+在 120 秒靜態預算下會把 supply-chain bytecode accounting 記為 runtime_limit；提高後的
+focused scan 為 0 finding、0 limitation。timeout 仍回 exit 2，不視為通過。

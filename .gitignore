@@ -44,3 +44,6 @@ upstream-review-report.md
 dependency-freshness-report.md
 release-notes.md
 release-title.txt
+
+# SkillSpector self-scan reports (generated locally by tools/dev_check.ps1)
+.skillspector-reports/

@@ -1,5 +1,11 @@
 [CmdletBinding()]
-param()
+param(
+    [ValidateRange(30, 600)]
+    [int]$SkillSpectorMaxStaticSeconds = 300,
+    [ValidateRange(60, 1800)]
+    [int]$SkillSpectorMaxWorkflowSeconds = 900,
+    [string]$SkillSpectorPython = ""
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -14,8 +20,17 @@ if (Test-Path -LiteralPath $venvPython) {
     $pythonExe = (Get-Command python -ErrorAction Stop).Source
 }
 
+if ([string]::IsNullOrWhiteSpace($SkillSpectorPython)) {
+    $skillSpectorPythonExe = $pythonExe
+} elseif (Test-Path -LiteralPath $SkillSpectorPython -PathType Leaf) {
+    $skillSpectorPythonExe = (Resolve-Path -LiteralPath $SkillSpectorPython).Path
+} else {
+    $skillSpectorPythonExe = (Get-Command $SkillSpectorPython -ErrorAction Stop).Source
+}
+
 $env:PYTHONUTF8 = "1"
 $env:PYTHONIOENCODING = "utf-8"
+$env:SKILLSPECTOR_MAX_STATIC_SECONDS = [string]$SkillSpectorMaxStaticSeconds
 
 function Invoke-PythonStep {
     param(
@@ -36,6 +51,7 @@ $pythonTools = @(
     "tools\check_upstream_updates.py",
     "tools\check_dependency_freshness.py",
     "tools\check_links.py",
+    "tools\run_skillspector.py",
     "tools\validate_skills.py"
 )
 
@@ -45,7 +61,7 @@ Invoke-PythonStep -Label "Compile maintained Python" -Arguments (
 Invoke-PythonStep -Label "Ruff (E9 + F)" -Arguments @(
     "-m", "ruff", "check", "--select", "E9,F", "--target-version", "py39",
     "tests", "tools\check_upstream_updates.py", "tools\check_dependency_freshness.py",
-    "tools\check_links.py", "tools\validate_skills.py"
+    "tools\check_links.py", "tools\run_skillspector.py", "tools\validate_skills.py"
 )
 Invoke-PythonStep -Label "Pytest" -Arguments @("-m", "pytest", "tests", "-q")
 Invoke-PythonStep -Label "Validate skills" -Arguments @(
@@ -69,5 +85,72 @@ foreach ($cli in $cliFiles) {
 Invoke-PythonStep -Label "Check Markdown links" -Arguments @(
     "tools\check_links.py"
 )
+
+function Invoke-SkillSpectorSelfScan {
+    # Pre-publish self-scan: run the SkillSpector security scanner against every
+    # skill this repo ships, the same way a downstream host would scan a
+    # third-party skill before installing it. Ratchet, not one-time: new findings
+    # (anything not already in .skillspector-baseline.yaml) fail this gate; they
+    # must be reviewed and either fixed or added to the baseline with a specific
+    # reason -- never rubber-stamped.
+    #
+    # Gate signal is the JSON report's `issues` array, not $LASTEXITCODE:
+    # SkillSpector's exit code reflects an aggregate risk-score threshold (see its
+    # docs/SUPPRESSION.md), not "any un-suppressed finding present", so relying on
+    # exit code alone would silently let new LOW/MEDIUM findings through.
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+        [Parameter(Mandatory)]
+        [string]$SkillsRoot
+    )
+
+    & $script:skillSpectorPythonExe -c "import skillspector" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        throw ("Required SkillSpector self-scan cannot run because the Python " +
+            "package is unavailable. Install requirements-security.txt before " +
+            "running this canonical gate.")
+    }
+
+    $baselinePath = Join-Path $RepoRoot ".skillspector-baseline.yaml"
+    if (-not (Test-Path -LiteralPath $baselinePath)) {
+        throw ("Missing $baselinePath -- generate baseline entries with " +
+            "'skillspector baseline skills\<name> --no-llm --reason ...' for every " +
+            "skill under skills\ before this gate can run.")
+    }
+
+    $reportDir = Join-Path $RepoRoot ".skillspector-reports"
+    New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+
+    Write-Host "==> SkillSpector self-scan (skills\*)"
+    $skillDirs = Get-ChildItem -LiteralPath $SkillsRoot -Directory
+    $failedSkills = @()
+    foreach ($skill in $skillDirs) {
+        $reportPath = Join-Path $reportDir "$($skill.Name).json"
+        & $script:skillSpectorPythonExe tools\run_skillspector.py $skill.FullName `
+            --output $reportPath --baseline $baselinePath `
+            --max-workflow-seconds $script:SkillSpectorMaxWorkflowSeconds
+        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
+            throw ("skillspector scan crashed on skill '$($skill.Name)' " +
+                "(exit code $LASTEXITCODE); see $reportPath")
+        }
+        $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+        if ($report.issues.Count -gt 0) {
+            $failedSkills += "$($skill.Name) ($($report.issues.Count) finding(s))"
+        }
+    }
+
+    if ($failedSkills.Count -gt 0) {
+        throw ("SkillSpector found new, un-baselined finding(s) in: " +
+            "$($failedSkills -join '; '). Review the reports under $reportDir and " +
+            "either fix the skill content or add a reviewed fingerprint/rule to " +
+            ".skillspector-baseline.yaml with a specific reason -- do not rubber-stamp " +
+            "CRITICAL or otherwise real findings into the baseline.")
+    }
+
+    Write-Host "SkillSpector self-scan: no new findings across $($skillDirs.Count) skill(s)."
+}
+
+Invoke-SkillSpectorSelfScan -RepoRoot $repoRoot -SkillsRoot (Join-Path $repoRoot "skills")
 
 Write-Host "WINDOWS DEV CHECK GREEN"

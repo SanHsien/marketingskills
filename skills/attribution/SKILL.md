@@ -150,7 +150,7 @@ The one case that needs real machinery: a conversion that completes on a domain 
 
 1. **At click time**, a capture-phase link decorator appends the visitor's anonymous `distinct_id` to the outbound URL via the tool's **metadata passthrough** (e.g. `?metadata[ph_distinct_id]=<id>`). One document-level listener covers every CTA — no per-link edits.
 2. The third-party tool stores that metadata and returns it in its **webhook**.
-3. Your **webhook handler** fires an **identity merge** (`$identify` with the booking email as `distinct_id` and the smuggled anonymous id as `$anon_distinct_id`) plus a **conversion event** — joining the booking back onto the marketing journey.
+3. Your **webhook handler** fires an **identity merge** (the <code>$identify</code> event with the booking email as <code>distinct_id</code> and the smuggled anonymous id as <code>$anon_distinct_id</code>) plus a **conversion event** — joining the booking back onto the marketing journey.
 
 ### Guardrails (do not skip)
 
@@ -162,7 +162,7 @@ The one case that needs real machinery: a conversion that completes on a domain 
 
 The first payoff is one insight: your **conversion event broken down by first-touch channel** (`$initial_utm_source` / `$initial_referring_domain`), and — joined to revenue — **channel → conversion → revenue**. Confirm first-touch vs. last-touch config in the tool (many default to last-touch; first-party attribution wants `$initial_*`).
 
-But first-touch alone can't run the multi-touch models from §2. **Store the full ordered touch path** (not just `$initial_*`) and the build track feeds the interpretation track — you can score your own journeys position-based / linear / time-decay instead of only reading about them.
+But first-touch alone can't run the multi-touch models from §2. **Store the full ordered touch path** (not just <code>$initial_*</code>) and the build track feeds the interpretation track — you can score your own journeys position-based / linear / time-decay instead of only reading about them.
 
 **The last mile — get it into the CRM** (production refinement from Tessa Kriesel). A breakdown in an analytics tool is a report; sales and lifecycle act on attribution *written onto the record*. Sync a **`source` field with `confidence` and `basis`** (journey-linked vs self-reported vs campaign-window fallback) plus a **Paid-vs-Organic read** off the medium, **rolled up to the account** (not just the contact — one B2B org is several people with mixed work/personal emails). How pipeline/lifecycle then *use* it is **revops**' job.
 

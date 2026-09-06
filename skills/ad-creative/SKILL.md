@@ -330,7 +330,22 @@ Per-concept format is defined in [references/static-ad-templates.md](references/
 
 ### Creative Review Page (client / stakeholder approval)
 
-When a person who isn't you needs to review and pick — a client, a partner, a stakeholder — produce a **creative review page**: a self-contained HTML artifact that presents each concept as an in-feed platform mockup (Instagram/Facebook, with a whitelist-handle toggle), breaks carousels into a labeled frame-by-frame storyboard, lets them toggle headline/copy variations, and discloses what's grounded in real assets. It's the visual upgrade to INDEX.md — a decision made off one link instead of by reading markdown. The template ships at [assets/creative-review-template.html](assets/creative-review-template.html) (one file, no build, hostable anywhere); populate its `DATA` object from your generated concepts. Full data model, grounding rules (the disclosure block is required), and delivery in [references/creative-review-page.md](references/creative-review-page.md).
+When a person who isn't you needs to review and pick — a client, a partner, or a
+stakeholder — produce a **creative review page**. It is a self-contained HTML
+artifact that presents each concept as an in-feed platform mockup
+(Instagram/Facebook, with a whitelist-handle toggle), breaks carousels into a
+labeled frame-by-frame storyboard, lets reviewers toggle headline and copy
+variations, and discloses what is grounded in real assets.
+
+This is the visual upgrade to INDEX.md: reviewers can decide from one link
+instead of reading Markdown. Use
+[the bundled HTML template](assets/creative-review-template.html).
+It is one file, needs no build, and can be hosted anywhere. Populate its `DATA`
+object from your generated concepts.
+
+See [the creative review guide](references/creative-review-page.md)
+for the full data model, grounding rules (including the required disclosure
+block), and delivery guidance.
 
 ### Iteration Report
 
@@ -377,7 +392,7 @@ For large-scale creative production (Anthropic's growth team generates 100+ vari
 ## Common Mistakes
 
 - **Writing headlines that only work together** — RSA headlines get combined randomly
-- **Ignoring character limits** — Platforms truncate without warning
+- **Ignoring character limits** — Platforms truncate over-limit copy
 - **All variations sound the same** — Vary angles, not just word choice
 - **No CTA headlines** — RSAs need action-oriented headlines to drive clicks; include at least 2-3
 - **Generic descriptions** — "Learn more about our solution" wastes the slot

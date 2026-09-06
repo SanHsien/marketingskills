@@ -66,7 +66,7 @@ Users should reach any important page within 3 clicks from the homepage. This is
 
 | Approach | Best For | Tradeoff |
 |----------|----------|----------|
-| Flat (2 levels) | Small sites, portfolios | Simple but doesn't scale |
+| Flat (2 levels) | Small sites, portfolios | Simple but does not scale |
 | Moderate (3 levels) | Most SaaS, content sites | Good balance of depth and findability |
 | Deep (4+ levels) | E-commerce, large docs | Scales but risks burying content |
 

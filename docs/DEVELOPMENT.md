@@ -27,11 +27,14 @@ tools/integrations/        上游工具整合指南
 python -m venv .venv
 .venv\Scripts\python -m pip install --upgrade pip
 .venv\Scripts\python -m pip install -r requirements-dev.txt
+.venv\Scripts\python -m pip install -r requirements-security.txt
 $env:PYTHONUTF8 = "1"
 pwsh -NoProfile -File tools\dev_check.ps1
 ```
 
-先決條件：Python 3.14（CI 另測 3.9–3.14）、Node.js 18+、PowerShell 7。
+先決條件：Python 3.13、Node.js 18+、PowerShell 7。一般測試另在 Ubuntu
+覆蓋 Python 3.9–3.14；Windows canonical security gate 固定 Python 3.13，因目前
+`yara-python` 尚無 Python 3.14 的 Windows wheel。
 
 只驗證產品入口是否齊全時，確認：
 
@@ -53,12 +56,21 @@ pwsh -NoProfile -File tools\dev_check.ps1
 4. `python tools/validate_skills.py`
 5. `node --check`（`tools/clis/*.js`）
 6. `python tools/check_links.py`
+7. 以 `requirements-security.txt` 釘定的 SkillSpector 完整掃描 50 個產品 skill
 
-CI 在 Ubuntu 跑 3.9–3.14，並加一個 Windows Python 3.14 job 跑同一套 gate。推 `main` 前先跑本機 gate。
+掃描預設每個靜態分析 300 秒、每個 skill workflow 900 秒；這是大型 reference
+skill 在 Windows runner 上完成 bytecode/supply-chain accounting 所需的可重現預算，
+不是忽略 timeout。超時仍是 incomplete 並讓 gate 失敗。
+
+完整性 checker 另核對釘定版本的 exact 24-analyzer set 與 100% 元件覆蓋。唯一可接受的
+頂層 `partial` 是 nonfatal `reference_unresolved`，且 ledger 與 reference source-line
+key set 必須完全對應；更新 SkillSpector pin 時須重新審查並同步 expected analyzer set。
+
+CI 在 Ubuntu 跑 3.9–3.14，並加一個 Windows Python 3.13 job 跑完整 canonical gate。推 `main` 前先跑本機 gate。
 
 ## 工具設定
 
-`pyproject.toml` **只放工具設定**，沒有 `[project]` 與 `[build-system]`：本 repo 交付的是 Markdown Agent Skills，不是 Python 套件。改 `ci.yml` 的 ruff 旗標時要同步改 `pyproject.toml`，`tests/test_docs.py::test_tool_config_matches_ci_flags` 會擋住漂移。`.python-version` 釘 3.14。
+`pyproject.toml` **只放工具設定**，沒有 `[project]` 與 `[build-system]`：本 repo 交付的是 Markdown Agent Skills，不是 Python 套件。改 `ci.yml` 的 ruff 旗標時要同步改 `pyproject.toml`，`tests/test_docs.py::test_tool_config_matches_ci_flags` 會擋住漂移。`.python-version` 釘 3.13，讓 fresh clone 預設可重現 Windows canonical gate；若既有 `.venv` 使用其他支援版本，可用 `-SkillSpectorPython <Python 3.13 路徑>` 指定安全掃描環境。
 
 `.gitattributes` 把行尾釘成 LF。沒有它，全域 `core.autocrlf=true` 會讓工作區變 CRLF，於是 `git status` 顯示檔案 modified 但 `git diff` 是空的。
 

@@ -167,7 +167,7 @@
         { "label": "The problem", "prompt": "Editorial card: 'Plants absorb more than nutrients' + Pb/As/Cd chips" },
         { "label": "Enter Light Labs", "prompt": "Clean card: 'So we sent it to Light Labs' + independent-lab note" },
         { "label": "The results", "prompt": "Results table: Arsenic / Cadmium / Lead, all within limits, green check" },
-        { "label": "For context", "prompt": "'Less arsenic than your breakfast' comparison bar" },
+        { "label": "For context", "prompt": "'Lower than a typical breakfast' comparison bar" },
         { "label": "The ask", "prompt": "Product you can finally trust — CTA frame", "headline": "Protein you can finally trust." }
       ],
       "headlines": [
@@ -175,7 +175,7 @@
         "We tested our protein for heavy metals. Here's what an independent lab found.",
         "Most protein powders are never tested for heavy metals. Ours is."
       ],
-      "primaryText": "We tested our Plant-Based Protein for the heavy metals that hide in “clean” powders — lead, arsenic and cadmium. Here's exactly what an independent lab measured.",
+      "primaryText": "We tested our Plant-Based Protein for the heavy metals that hide in “clean” powders — lead, As and cadmium. Here's exactly what an independent lab measured.",
       "destination": { "url": "shop.truvani.com", "cta": "Shop now", "offer": "72% OFF Protein Starter Kit" },
       "rollout": {
         "title": "How the whitelist runs",
@@ -193,19 +193,19 @@
       "tagline": "Leads with the brown-rice comparison",
       "frames": [
         { "label": "Hook", "prompt": "Split visual: brown rice vs protein scoop", "headline": "Your “clean” brown rice protein? Test it.", "headlineTheme": "dark" },
-        { "label": "The claim", "prompt": "Stat card comparing arsenic levels" },
+        { "label": "The claim", "prompt": "Stat card comparing contaminant levels" },
         { "label": "The proof", "prompt": "Light Labs results table" },
         { "label": "The context", "prompt": "What the numbers mean, plainly" },
         { "label": "The ask", "prompt": "Starter-kit offer frame", "headline": "Trust the label. Then trust the test." }
       ],
       "headlines": [
         "Your “clean” brown rice protein? Test it.",
-        "Brown rice protein is often the worst offender for arsenic. We checked ours.",
+        "Brown rice protein can concentrate this contaminant. We checked ours.",
         "“Plant-based” doesn't mean “clean.” We have the lab panel to prove ours is."
       ],
-      "primaryText": "Brown-rice protein is one of the most common sources of dietary arsenic. So we sent ours to an independent lab. Here's the panel.",
+      "primaryText": "Brown-rice protein can be a source of this dietary contaminant. So we sent ours to an independent lab. Here's the panel.",
       "destination": { "url": "shop.truvani.com", "cta": "Shop now", "offer": "72% OFF Protein Starter Kit" },
-      "grounding": "Comparison figures are from Truvani's Light Labs panel and published dietary-arsenic ranges. No competitor is named."
+      "grounding": "Comparison figures are from Truvani's Light Labs panel and published dietary-contaminant ranges. No competitor is named."
     }
   ]
 }
@@ -353,7 +353,8 @@ function renderPost() {
   }
 
   document.getElementById("post").innerHTML = top + frameHTML(c, f) + chrome;
-  document.getElementById("board-label").textContent = `${c.name} · ${state.frame + 1}/${c.frames.length} · tap to jump`;
+  document.getElementById("board-label").textContent =
+    c.name + " · " + (state.frame + 1) + "/" + c.frames.length + " · tap to jump";
 }
 
 function renderBoard() {

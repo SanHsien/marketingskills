@@ -48,10 +48,30 @@ def test_maintainer_markdown_links_resolve() -> None:
     assert failures == 0
 
 
-def test_ci_covers_python_314() -> None:
+def test_ci_covers_python_314_and_uses_scanner_compatible_windows() -> None:
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert '"3.14"' in workflow
-    assert "windows / py3.14" in workflow
+    assert "windows / py3.13" in workflow
+    assert "python -m pip install -r requirements-security.txt" in workflow
+
+
+def test_fresh_clone_docs_install_the_pinned_security_scanner() -> None:
+    assert (ROOT / ".python-version").read_text(encoding="utf-8").strip() == "3.13"
+    for relative_path in (
+        "AGENTS.md",
+        "README.md",
+        "README.en.md",
+        "FORK.md",
+        "docs/DEVELOPMENT.md",
+    ):
+        text = (ROOT / relative_path).read_text(encoding="utf-8")
+        assert "requirements-security.txt" in text, relative_path
+
+
+def test_canonical_gate_has_realistic_full_scan_budgets() -> None:
+    dev_check = (ROOT / "tools" / "dev_check.ps1").read_text(encoding="utf-8")
+    assert "[int]$SkillSpectorMaxStaticSeconds = 300" in dev_check
+    assert "[int]$SkillSpectorMaxWorkflowSeconds = 900" in dev_check
 
 
 def test_upstream_workflows_have_repo_guard() -> None:
