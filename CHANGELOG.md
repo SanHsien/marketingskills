@@ -10,6 +10,20 @@
 
 ---
 
+## 2026-09-11（批次審查）
+
+### 同步
+
+- **ai-seo 2.5.0（上游 commit `5b2c000`，cherry-pick）。** ChatGPT 5.6 後 listicle／comparison
+  引用率下滑的 format-volatility 指引與新 reference，純產品內容與版本號更新，無 fork 檔案衝突。
+
+### 略過
+
+- **Converly 二次上架（`d4ff28a`）與 Ploy 上架三部曲（`4fbe11f`／`88de9fd`／`5cd4a7e`）。**
+  上游付款清償後恢復贊助商揭露，但那是上游與廠商的商業關係，不是本 fork 的；維持既有的贊助商
+  CTA 略過政策。7 個仍是 open 的上游 PR（#572、#573、#575、#580、#581、#582、#583）暫緩到合併
+  後再審。理由見 [`docs/DECISIONS.md`](docs/DECISIONS.md)。
+
 ## 2026-09-11
 
 ### 變更

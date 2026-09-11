@@ -45,3 +45,14 @@ README 衝突的解法：上游新英文產品說明翻進 `README.md`，並同�
 - issue：編號與 PR 共用，水位同為 **569**（`reviewed_issue_through`）
 - commit baseline：`b1aaa36`（完整 SHA 見 `tools/upstream_baseline.json`）
 - 下次只看編號更大的，或已評估項目是否出現新 commit／新 head
+
+## 2026-09-11：批次審查（commit 水位推進到 `5b2c000`）
+
+- PR：已看到 **#583**（`reviewed_pr_through`）
+- issue：維持 **569**（`--strict` 實查無新項目）
+- commit baseline：`5b2c000`（完整 SHA 見 `tools/upstream_baseline.json`）
+- 採用：`5b2c000`（ai-seo 2.5.0，cherry-pick）
+- 略過：`d4ff28a`（Converly 二次上架）、`4fbe11f`／`88de9fd`／`5cd4a7e`（Ploy 上架三部曲）——
+  贊助商 CTA，維持既有政策
+- 暫緩（open PR，未合併）：#572、#573、#575、#580、#581、#582、#583
+- 理由見 `docs/DECISIONS.md` 2026-09-11 條目

@@ -11,6 +11,22 @@ adopt/skip reasoning is recorded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ---
 
+## 2026-09-11 (batch review)
+
+### Synced
+
+- **ai-seo 2.5.0 (upstream commit `5b2c000`, cherry-picked).** Format-volatility guidance and a
+  new reference for the post-ChatGPT-5.6 drop in listicle/comparison citation share; pure product
+  content and version bump, no fork-file conflicts.
+
+### Skipped
+
+- **Converly re-onboarding (`d4ff28a`) and the Ploy onboarding trio (`4fbe11f`/`88de9fd`/`5cd4a7e`).**
+  Upstream restored the sponsor disclosure once payment cleared, but that's upstream's commercial
+  relationship with the vendor, not this fork's; the existing sponsor-CTA skip policy stands. Seven
+  upstream PRs are still open (#572, #573, #575, #580, #581, #582, #583) and deferred until merged.
+  Reasoning in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+
 ## 2026-09-11
 
 ### Changed

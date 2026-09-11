@@ -212,3 +212,88 @@ skill 目錄名稱保留，`scoped_rules` 照樣對得上。
 **驗證**：`tests/test_stage_scan_input.py` 在拋棄式 git repo 上驗證 CRLF 還原、binary 與 `eol=crlf`
 不動、未追蹤與 gitignore、pathspec／exclude、CLI 輸出，共 6 項；拿掉 CRLF 替換那一行，還原測試會失敗。
 本機 checkout 仍有 466 個 CRLF 檔，gate 暫存 278 個檔、正規化 278 個，50 個 skill 全數通過。
+
+## 2026-09-11：批次審查 — 5 個已合併 commit ＋ 12 個 PR
+
+commit 水位 `e55de88` → `5b2c000`；PR 水位 571 → 583；issue 水位維持 569（`--strict` 實查無新項目）。
+
+### 略過：Converly 二次上架（上游 commit `d4ff28a` / PR #574）—維持與 #571 相反方向的一致立場
+
+**上游做了什麼**：Aaron Beashel 補完款項與上架表單，`partners.json` 的 converly 條目 `active` 改回
+`true`，README／REGISTRY 的 Verified Partners 區塊與 Tool Index 列復原，`tools/integrations/converly.md`
+從 `.partners-pending/` 復原。commit 訊息明講「the inverse of the #571 unpublish」。
+
+**為什麼不跟進（即使 #571 下架的理由——未付款——已經不成立）**：`#571` 決策條目寫的下架理由有兩層，
+「未付款」只是觸發點，真正的立場是「**本 fork 與 Converly 沒有任何商業關係，卻在替一個廠商掛保證**」。
+`d4ff28a` 復原的免責聲明字句是「Converly sponsors Marketing Skills」——這是上游與 Converly 之間的贊助
+關係揭露，不是本 fork 的。付款清償只讓上游那筆揭露變得準確，不會讓本 fork 平白多出一個商業關係。
+`FORK.md`／`docs/UPSTREAM.md` 既有規則本來就是「作者宣傳、贊助 CTA、個人事業連結略過」，贊助商揭露卡片
+正是這一類。維持略過，不是重新評估後撤回，是同一條規則第二次套用到同一個廠商。
+
+**落地**：不 cherry-pick。`partners.json` 的 converly 條目維持本 fork既有的 `active: false`；不新增
+`tools/integrations/converly.md`；README／REGISTRY 不變。
+
+**觸發條件**：無——這不是「等上游狀態變化再看」的暫緩，是本 fork 對贊助商內容的一貫政策，除非維護者明確
+決定要跟進贊助揭露。
+
+### 略過：Ploy Skill Partner 上架三部曲（上游 commit `4fbe11f`／`88de9fd`／`5cd4a7e`，PR #576–#578）
+
+**上游做了什麼**：`4fbe11f` 以 `active:false` 暫存 Ploy（等上架包裹），`88de9fd` 在款項清償後轉為
+`active:true` 並補上 README／REGISTRY／`tools/integrations/ploy.md`（同樣帶 `?ref=` 導流連結與
+「Ploy sponsors...」性質的贊助商卡片），`5cd4a7e` 把 `category` 欄修成網站上分類格線用的正式名稱
+（純上游站台顯示邏輯，`categoryShort` 不受影響）。
+
+**為什麼略過**：與 Converly 同一類——這是上游與 Ploy 的付費 Skill Partner 關係揭露，不是本 fork 的。
+即使 `5cd4a7e` 是單純的分類字串修正也一併略過，因為它修正的是 `88de9fd` 這個本 fork 本來就不採用的
+條目；沒有 `88de9fd` 的內容，`5cd4a7e` 沒有東西可修。
+
+**落地**：三個 commit 都不 cherry-pick；本 fork 的 `partners.json` 不含 ploy 條目。
+
+**觸發條件**：同 Converly——這是政策性略過，不是等待中的暫緩。
+
+### 採用：ai-seo 2.5.0 — ChatGPT 5.6 format-volatility 指引（上游 commit `5b2c000` / PR #579）
+
+**上游做了什麼**：`skills/ai-seo/SKILL.md` 改寫 Content Types 段落並新增
+`references/format-volatility.md`（ChatGPT 5.6 後 listicle／comparison 引用率分別下滑
+50.5%／32.1%、`site:`／official 檢索上升的資料與應對），`evals/evals.json` 新增第 10 筆
+eval，`VERSIONS.md`／`.claude-plugin/plugin.json`／`.claude-plugin/marketplace.json` 版本號
+從 2.11.0 前進到 2.11.1（ai-seo 2.4.0 → 2.5.0）。
+
+**為什麼採用**：純產品 skill 內容與版本號更新，不碰 README／REGISTRY／partners、不碰三支加了
+repo 閘門的 workflow，與繁中入口、Windows gate、測試都沒有衝突。`AGENTS.md` 的邊界寫明產品
+`skills/` 以上游為準。
+
+**落地**：`git cherry-pick -x 5b2c000`（不用 `git merge`，因為同一段上游歷史裡夾著上面兩組略過
+的贊助商 commit；逐筆 cherry-pick 才能只拿 ai-seo 這一筆）。乾淨套用，無衝突。
+
+**觸發條件**：無，已完成。
+
+### 暫緩：7 個尚未合併的上游 PR（#572、#573、#575、#580、#581、#582、#583）
+
+逐筆讀過 diff；全部維持 OPEN，上游尚未定案（`#581` 自己說「20 commits, one per file...happy
+to squash」，內容還可能變動）。依審查清冊的既定原則——不採用未合併的 open PR，除非它修的是本 fork
+自己的工具能證明存在的缺陷——逐一記錄：
+
+- **#572** `fix(ai-seo): distinguish search and training crawlers`：改 `skills/ai-seo/SKILL.md`
+  與兩份 references，屬產品內容修正，非本 fork 特有缺陷。暫緩。
+- **#573** `feat: analysis-discipline hardening from Magister benchmark evidence (2.11.1)`：
+  改 4 個 skill 的 SKILL.md，屬產品內容擴充。暫緩。
+- **#575** `feat: add no-slop skill (2.12.0)`：新增整個 `skills/no-slop/`，屬產品新增。暫緩。
+- **#580** `fix: make standalone skill tool links portable`：把 `skills/ai-seo`／
+  `skills/churn-prevention`／`skills/emails` 裡 `../../tools/...` 相對連結換成絕對
+  GitHub blob URL，理由是「只複製 skill 資料夾時相對連結會斷」。
+- **#581** `fix(skills): portable tools links...(fixes #524)`：同一類修正，範圍擴大到 20 個
+  skill 檔共 105 個連結。
+  **#580／#581 為什麼不算「本 fork 自己的工具能證明存在的缺陷」**：`tools/check_links.py` 檔頭
+  明寫「不掃 skills/ 與 tools/integrations/：那些是上游產品」，程式也只 glob repo 根目錄、
+  `docs/`、`.github/` 的 `.md`。本 fork 現有的連結檢查工具**完全不驗證這類連結**，所以無法用
+  它證明這是本 fork 目前展示得出來的缺陷；只是上游自陳的已知問題，尚未合併。暫緩到合併之後
+  再走一般產品同步流程。
+- **#582** `feat: add md2video-audio skill`：新增含 Python 腳本的整個技能，屬產品新增；若合併，
+  下次審查要另外評估 `.py` 腳本是否落入 Windows gate 的 SkillSpector 掃描範圍。暫緩。
+- **#583** `fix: repair internal documentation links`：改 `scripts/sync-partners.mjs`、
+  `skills/ad-creative`、`skills/ads` 的一份 reference 與 `tools/PARTNERS.md`。同樣是上游
+  自己（非本 fork 工具）發現並待合併的連結修正。暫緩。
+
+**觸發條件**：任一 PR 合併後，經由 commit 軸抵達，下次批次審查照一般流程逐筆判斷；若上游關閉
+不合併，則比照 `#570` 的處理方式不再引用。
