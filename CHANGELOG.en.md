@@ -11,6 +11,12 @@ adopt/skip reasoning is recorded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ---
 
+## 2026-09-11
+
+### Changed
+
+- **SkillSpector pin moved to 2.11.2 (`75bd6f3`).** Exact fingerprints are bound to the scanner version by design, so all of them were regenerated: 40 hashes replaced with every reason kept verbatim, and 5 entries that 2.11.2 no longer produces removed. Verified on an LF staging copy byte-identical to CI: all 50 skills pass, and the mutation probe is still caught. Details in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+
 ## 2026-08-27 (review)
 
 ### Fixed

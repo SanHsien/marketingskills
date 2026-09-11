@@ -169,3 +169,30 @@ focused scan 為 0 finding、0 limitation。timeout 仍回 exit 2，不視為通
 實際由 editable source 載入新版，但 requirements 仍安裝舊 revision；版本字串同為 2.11.0，
 不能當成相同 provenance。新 SHA 已確認在 `SanHsien/SkillSpector` 遠端 main，且其 CI、
 CodeQL、Scorecard 全綠。
+
+## 2026-09-11：SkillSpector pin 前進到 2.11.2，精確 fingerprint 重產
+
+**決定**：`requirements-security.txt` 從 `185d610`（2.11.0）前進到 `75bd6f3`（`SanHsien/SkillSpector`
+合併上游 2.11.2）。`.skillspector-baseline.yaml` 的 40 筆精確 fingerprint 換成新版雜湊、理由逐字保留；
+5 筆在 2.11.2 下已不再產生 finding 的 fingerprint 移除；`scoped_rules` 不動。
+
+**理由**：2.11.1／2.11.2 含安全分析修正（finding identity 保留分類與有界證據、隱藏指令偵測、
+reference accounting 的 fatal 錯誤）。精確 fingerprint 依 `suppression.finding_fingerprint` 同時雜湊
+掃描器版本、元件內容與 finding，所以**任何掃描器升版都會讓全部 fingerprint 失效**，即使 finding 本身
+沒變。重產以「CI 等效位元組」為準：把文字檔依 `.gitattributes` 正規化回 index 的 LF 後放到暫存目錄。
+在該暫存上，舊 pin 的 50 個 skill 全數 exit 0（證明暫存與 CI 等效）；2.11.2 則是 40 筆一對一漂移、
+0 組新增、0 組部分減少，另有 4 組共 5 筆不再產生：`ad-creative` RP1
+`references/generative-tools.md` ×2、`ads` MP3 `references/meta-decision-system.md`、
+`marketing-loops` EA4 `evals/evals.json`、`revops` RA2 `references/automation-playbooks.md`。
+刪掉這 5 筆不是放寬：精確 fingerprint 只對應完整內容雜湊，留著也壓不住別的東西，而它們若再出現，
+gate 會紅。
+
+**驗證**：以本 repo 的 `tools/run_skillspector.py`、gate 預設預算（靜態 300 秒、workflow 900 秒、
+`PYTHONHASHSEED=0`）在暫存上重掃 50 個 skill 全數 exit 0；analyzer 集合在兩版都是同一組 24 個，
+完整性契約不必改。突變：在 `ab-testing` 注入外傳 `os.environ` 並 `eval` 回應的腳本，exit 1。
+`tests/test_docs.py` 的 pin 斷言跟著前進，而不是放寬。重產工具逐行保留理由、順序與 `scoped_rules`，
+只換 `- hash:` 行與 `scanner_version:`，並刪除上述 5 個區塊。
+
+**本機注意**：這份 checkout 的文字檔是 CRLF（早於 `.gitattributes`），index 與 CI 則是 LF；gate 直接
+掃工作區，證據雜湊因此不同，本機會把 baseline 裡的 finding 報成新的——與掃描器版本無關。這是本機
+假紅，不是 baseline 問題；要在本機得到與 CI 相同的結果，需以 LF 正規化後的內容掃描。
