@@ -196,3 +196,19 @@ gate 會紅。
 **本機注意**：這份 checkout 的文字檔是 CRLF（早於 `.gitattributes`），index 與 CI 則是 LF；gate 直接
 掃工作區，證據雜湊因此不同，本機會把 baseline 裡的 finding 報成新的——與掃描器版本無關。這是本機
 假紅，不是 baseline 問題；要在本機得到與 CI 相同的結果，需以 LF 正規化後的內容掃描。
+
+## 2026-09-11：本機自我掃描改掃 index 行尾的暫存
+
+**決定**：`tools/dev_check.ps1` 的 SkillSpector 自我掃描不再直接掃 `skills/`，改掃
+`tools/stage_scan_input.py` 在暫存目錄產生的副本；上一節「本機注意」描述的假紅由此解決。
+
+**理由**：重新 checkout 或 `git add --renormalize` 也能消掉 CRLF，但它只修這台機器，下一個早於
+`.gitattributes` 的 clone 又會紅，而且改工作區是破壞性操作。暫存讓 gate 的輸入跟 CI 一致，工作區不動。
+範圍：`git ls-files --cached --others --exclude-standard -- skills`，也就是已追蹤加尚未提交、不含
+gitignore 的檔案，所以新 skill 在提交前就會被掃到。只有 index 為 `i/lf` 且屬性沒要求 `eol=crlf`
+的檔案才把 CRLF 換成 LF；binary、`eol=crlf` 與未追蹤檔逐位元組複製，不替尚未進 index 的檔案猜行尾。
+skill 目錄名稱保留，`scoped_rules` 照樣對得上。
+
+**驗證**：`tests/test_stage_scan_input.py` 在拋棄式 git repo 上驗證 CRLF 還原、binary 與 `eol=crlf`
+不動、未追蹤與 gitignore、pathspec／exclude、CLI 輸出，共 6 項；拿掉 CRLF 替換那一行，還原測試會失敗。
+本機 checkout 仍有 466 個 CRLF 檔，gate 暫存 278 個檔、正規化 278 個，50 個 skill 全數通過。

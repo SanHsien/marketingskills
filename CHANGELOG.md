@@ -16,6 +16,10 @@
 
 - **SkillSpector pin 前進到 2.11.2（`75bd6f3`）。** 精確 fingerprint 依設計綁定掃描器版本，升版後全數重產：40 筆換雜湊、理由逐字保留，5 筆在 2.11.2 下已不再產生的移除。以與 CI 位元組相同的 LF 暫存驗證，50 個 skill 全數通過，突變測試仍會擋下。細節見 [`docs/DECISIONS.md`](docs/DECISIONS.md)。
 
+### 修復
+
+- **本機 gate 在 CRLF checkout 上永遠假紅。** 早於 `.gitattributes` 的 checkout 把文字檔留成 CRLF，而精確 fingerprint 雜湊檔案內容，所以 baseline 裡的 finding 在本機全被報成新的。自我掃描改掃 `tools/stage_scan_input.py` 產生的暫存：取 git 看得到的檔案（已追蹤加尚未提交、不含 gitignore），index 為 LF 的文字檔還原成 LF，binary、`eol=crlf` 與未追蹤檔逐位元組複製。在 466 個 CRLF 檔的本機 checkout 上 50 個 skill 全數通過。
+
 ## 2026-08-27（覆核）
 
 ### 修復

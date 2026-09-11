@@ -17,6 +17,10 @@ adopt/skip reasoning is recorded in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 - **SkillSpector pin moved to 2.11.2 (`75bd6f3`).** Exact fingerprints are bound to the scanner version by design, so all of them were regenerated: 40 hashes replaced with every reason kept verbatim, and 5 entries that 2.11.2 no longer produces removed. Verified on an LF staging copy byte-identical to CI: all 50 skills pass, and the mutation probe is still caught. Details in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
+### Fixed
+
+- **The local gate was always red on a CRLF checkout.** A checkout made before `.gitattributes` keeps text files as CRLF, and exact fingerprints hash file content, so every baselined finding looked new locally. The self-scan now scans a staging copy made by `tools/stage_scan_input.py`: the files git sees (tracked plus not yet committed, without gitignored ones), with text files whose index copy is LF restored to LF, and binary, `eol=crlf` and untracked files copied byte for byte. On the local checkout with 466 CRLF files, all 50 skills pass.
+
 ## 2026-08-27 (review)
 
 ### Fixed

@@ -52,6 +52,7 @@ $pythonTools = @(
     "tools\check_dependency_freshness.py",
     "tools\check_links.py",
     "tools\run_skillspector.py",
+    "tools\stage_scan_input.py",
     "tools\validate_skills.py"
 )
 
@@ -61,7 +62,8 @@ Invoke-PythonStep -Label "Compile maintained Python" -Arguments (
 Invoke-PythonStep -Label "Ruff (E9 + F)" -Arguments @(
     "-m", "ruff", "check", "--select", "E9,F", "--target-version", "py39",
     "tests", "tools\check_upstream_updates.py", "tools\check_dependency_freshness.py",
-    "tools\check_links.py", "tools\run_skillspector.py", "tools\validate_skills.py"
+    "tools\check_links.py", "tools\run_skillspector.py", "tools\stage_scan_input.py",
+    "tools\validate_skills.py"
 )
 Invoke-PythonStep -Label "Pytest" -Arguments @("-m", "pytest", "tests", "-q")
 Invoke-PythonStep -Label "Validate skills" -Arguments @(
@@ -122,33 +124,54 @@ function Invoke-SkillSpectorSelfScan {
     $reportDir = Join-Path $RepoRoot ".skillspector-reports"
     New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
 
-    Write-Host "==> SkillSpector self-scan (skills\*)"
-    $skillDirs = Get-ChildItem -LiteralPath $SkillsRoot -Directory
-    $failedSkills = @()
-    foreach ($skill in $skillDirs) {
-        $reportPath = Join-Path $reportDir "$($skill.Name).json"
-        & $script:skillSpectorPythonExe tools\run_skillspector.py $skill.FullName `
-            --output $reportPath --baseline $baselinePath `
-            --max-workflow-seconds $script:SkillSpectorMaxWorkflowSeconds
-        if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
-            throw ("skillspector scan crashed on skill '$($skill.Name)' " +
-                "(exit code $LASTEXITCODE); see $reportPath")
+    # Scan a staged copy of the skills, not the working tree. Exact fingerprints
+    # hash file content, and a checkout made before .gitattributes keeps CRLF text
+    # files that the index and CI hold as LF; scanning it directly reports every
+    # baselined finding as new on that machine. tools\stage_scan_input.py copies
+    # git's view of the skills (tracked plus not yet committed, without gitignored
+    # files) and restores the index line endings. Skill directory names are kept,
+    # so scoped baseline rules still match.
+    $skillsPathspec = [IO.Path]::GetRelativePath($RepoRoot, $SkillsRoot)
+    $stageDir = Join-Path ([IO.Path]::GetTempPath()) (
+        "skillspector-stage-marketingskills-" + [IO.Path]::GetRandomFileName()
+    )
+    try {
+        & $script:pythonExe tools\stage_scan_input.py --repo $RepoRoot --dest $stageDir `
+            $skillsPathspec
+        if ($LASTEXITCODE -ne 0) {
+            throw "Staging the skills for the SkillSpector scan failed with exit code $LASTEXITCODE"
         }
-        $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
-        if ($report.issues.Count -gt 0) {
-            $failedSkills += "$($skill.Name) ($($report.issues.Count) finding(s))"
+
+        Write-Host "==> SkillSpector self-scan (skills\*, staged copy)"
+        $skillDirs = Get-ChildItem -LiteralPath (Join-Path $stageDir $skillsPathspec) -Directory
+        $failedSkills = @()
+        foreach ($skill in $skillDirs) {
+            $reportPath = Join-Path $reportDir "$($skill.Name).json"
+            & $script:skillSpectorPythonExe tools\run_skillspector.py $skill.FullName `
+                --output $reportPath --baseline $baselinePath `
+                --max-workflow-seconds $script:SkillSpectorMaxWorkflowSeconds
+            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
+                throw ("skillspector scan crashed on skill '$($skill.Name)' " +
+                    "(exit code $LASTEXITCODE); see $reportPath")
+            }
+            $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+            if ($report.issues.Count -gt 0) {
+                $failedSkills += "$($skill.Name) ($($report.issues.Count) finding(s))"
+            }
         }
-    }
 
-    if ($failedSkills.Count -gt 0) {
-        throw ("SkillSpector found new, un-baselined finding(s) in: " +
-            "$($failedSkills -join '; '). Review the reports under $reportDir and " +
-            "either fix the skill content or add a reviewed fingerprint/rule to " +
-            ".skillspector-baseline.yaml with a specific reason -- do not rubber-stamp " +
-            "CRITICAL or otherwise real findings into the baseline.")
-    }
+        if ($failedSkills.Count -gt 0) {
+            throw ("SkillSpector found new, un-baselined finding(s) in: " +
+                "$($failedSkills -join '; '). Review the reports under $reportDir and " +
+                "either fix the skill content or add a reviewed fingerprint/rule to " +
+                ".skillspector-baseline.yaml with a specific reason -- do not rubber-stamp " +
+                "CRITICAL or otherwise real findings into the baseline.")
+        }
 
-    Write-Host "SkillSpector self-scan: no new findings across $($skillDirs.Count) skill(s)."
+        Write-Host "SkillSpector self-scan: no new findings across $($skillDirs.Count) skill(s)."
+    } finally {
+        Remove-Item -Recurse -Force -LiteralPath $stageDir -ErrorAction SilentlyContinue
+    }
 }
 
 $previousPythonHashSeed = $env:PYTHONHASHSEED
